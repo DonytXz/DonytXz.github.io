@@ -1,60 +1,51 @@
-# Zero-Dependency Vanilla Portfolio
+# Donato Alvarez — Zero-Dependency Vanilla Portfolio
 
-> A hyper-optimized, text-first developer portfolio. No frameworks. No bundlers. No npm. Just HTML & CSS.
+> A hyper-optimized, text-first developer portfolio. No frameworks. No bundlers. No npm. Pure semantic HTML5 & a single raw CSS stylesheet.
 
 ## Philosophy
 
-This portfolio is a statement piece: it proves that mastery of web fundamentals produces results that no framework can match. Every line of code is intentional.
+This portfolio is a statement piece: it proves that mastery of web fundamentals and standards produces results that heavy frameworks cannot match. Every element is semantic, accessible, and fast.
 
-### Constraints
+### Constraints & Targets
 
 | Constraint | Value |
 |---|---|
-| **Frameworks** | 0 |
-| **NPM Packages** | 0 |
-| **External Requests** | 0 |
-| **CSS Files** | 1 |
-| **Build Step** | None |
-| **Target Page Weight** | < 15KB |
+| **Frontend Frameworks** | 0 |
+| **NPM Packages / Bundlers** | 0 |
+| **External Network Requests** | 0 |
+| **CSS Files** | 1 (`style.css`) |
+| **Build Step** | None (direct browser execution) |
+| **Total Uncompressed Weight** | ~32KB (HTML + CSS + inline SVG) |
 | **Lighthouse Target** | 100 / 100 / 100 / 100 |
+
+## Features & Highlights
+
+- **Dual-Mode Experience Section**: The short CV version (top 3 recent roles: Programming.com, TCS, Softtek) is displayed by default. An accessible native disclosure (`<details>` / `<summary>`) expands on demand to reveal the full career history (ConsultNet, SONETASOT, Sharptech, VR Life, Primal) with zero JavaScript required.
+- **Updated Role Hierarchy**: Reflects the updated **Sr Full Stack Developer** title at ConsultNet per latest records.
+- **Live System Specs Widget**: Reads browser `performance` navigation timings in real time to report actual bytes transferred and resource requests.
+- **Native Semantic HTML5**: Full ARIA landmarks (`<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<aside>`, `<footer>`), skip-to-content link, and strict `h1 → h2 → h3` hierarchy.
+- **Zero-Dependency Styling**: CSS Custom Properties (design tokens), 3 responsive breakpoints (desktop, tablet, mobile), and a print stylesheet that automatically expands all roles for CV printouts.
 
 ## How to Run
 
 ```bash
-# That's it. Open the file.
+# Direct local opening:
 open index.html
-```
 
-Or serve it locally:
-
-```bash
+# Or with a static local server (for full Performance API metrics):
 python3 -m http.server 8000
-# → http://localhost:8000
+# → Open http://localhost:8000
 ```
 
 ## Project Structure
 
 ```
 portfolio/
-├── index.html      # Single semantic HTML5 page
-├── style.css       # Single raw CSS stylesheet
-├── favicon.svg     # SVG favicon (also inlined in HTML)
-└── README.md       # You are here
+├── index.html      # Semantic HTML5 page with real CV content & disclosure
+├── style.css       # Single raw stylesheet (design tokens, layout, print)
+├── favicon.svg     # SVG monogram icon (also inlined in index.html head)
+└── README.md       # Project documentation
 ```
-
-## Architecture Decisions
-
-1. **System font stack** — `system-ui, -apple-system, 'Segoe UI'` eliminates font downloads entirely
-2. **Inline SVG favicon** — embedded as a `data:` URI, zero additional HTTP requests
-3. **CSS custom properties** — centralized design tokens without a preprocessor
-4. **`content-visibility: auto`** — browser-native lazy rendering for below-fold sections
-5. **Semantic HTML5** — proper landmarks (`<header>`, `<main>`, `<nav>`, `<footer>`, `<section>`, `<article>`) for accessibility
-6. **Skip-to-content link** — keyboard accessibility built in
-7. **Print stylesheet** — graceful degradation for paper
-
-## Performance
-
-The "System Specs" widget in the header dynamically calculates the actual page transfer size and resource count using the Performance API — no external analytics needed.
 
 ## License
 
