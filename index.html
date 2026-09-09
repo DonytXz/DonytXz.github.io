@@ -40,10 +40,15 @@
       <aside class="system-specs" aria-label="Page performance metrics">
         <strong>System Specs</strong>
         <ul>
-          <li>Page size: <span id="page-size">~32KB</span></li>
-          <li>Requests: <span id="request-count">0</span></li>
-          <li>Lighthouse: <span>100/100</span></li>
-          <li class="specs-note">&check; 0 external requests</li>
+          <li>Page weight: <span id="page-size">~32KB</span></li>
+          <li>Requests: <span id="request-count">2 (0 ext)</span></li>
+          <li>
+            Lighthouse: 
+            <button type="button" id="open-audit-btn" class="audit-btn" aria-haspopup="dialog" title="View official 100/100 Google Lighthouse report">
+              100/100 <span>[Report &nearr;]</span>
+            </button>
+          </li>
+          <li class="specs-note" id="ext-requests-note">&check; 0 external requests</li>
         </ul>
       </aside>
     </div>
@@ -119,7 +124,7 @@
 
       <!-- Expandable Detailed Experience: From Detailed CV & LinkedIn -->
       <details class="experience-expand">
-        <summary class="toggle-button" aria-label="Toggle earlier work history">
+        <summary class="toggle-button">
           <span class="expand-text">[ + ] Show full career history (5 earlier positions)</span>
           <span class="collapse-text">[ &minus; ] Show less</span>
         </summary>
@@ -340,24 +345,126 @@
     <p>&copy; 2026 Donato Alvarez &middot; Zero dependencies, 100% semantic HTML &amp; CSS &middot; Engineered for speed.</p>
   </footer>
 
-  <!-- Tiny inline script: calculate actual page size and request count -->
+  <!-- Real Lighthouse Audit Report Modal -->
+  <dialog id="lighthouse-dialog" class="audit-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-header">
+      <h2 id="dialog-title">Official Google Lighthouse 100/100 Audit Report</h2>
+      <div class="dialog-actions">
+        <a href="lighthouse-report.report.html" target="_blank" rel="noopener noreferrer" class="dialog-ext-link" title="Open report in separate browser tab">Open in new tab &nearr;</a>
+        <button type="button" id="close-audit-btn" class="dialog-close-btn" aria-label="Close audit report">&times;</button>
+      </div>
+    </div>
+    <div class="dialog-body">
+      <iframe id="audit-iframe" title="Google Lighthouse Audit Report" loading="lazy"></iframe>
+    </div>
+  </dialog>
+
+  <!-- Live System Specs Calculation & Dialog Controller -->
   <script>
     (function () {
-      function updateSpecs() {
-        var perf = performance.getEntriesByType('navigation')[0];
-        if (perf && perf.transferSize) {
-          var kb = (perf.transferSize / 1024).toFixed(1);
-          var el = document.getElementById('page-size');
-          if (el) el.textContent = kb + 'KB';
+      function calculateMetrics() {
+        var nav = performance.getEntriesByType('navigation')[0];
+        var resources = performance.getEntriesByType('resource');
+
+        // 1. Calculate true page weight (HTML + CSS)
+        var htmlBytes = 0;
+        if (nav && nav.decodedBodySize > 0) {
+          htmlBytes = nav.decodedBodySize;
+        } else if (nav && nav.encodedBodySize > 0) {
+          htmlBytes = nav.encodedBodySize;
+        } else if (document.documentElement) {
+          htmlBytes = new Blob([document.documentElement.outerHTML]).size;
         }
-        var res = performance.getEntriesByType('resource');
-        var el2 = document.getElementById('request-count');
-        if (el2) el2.textContent = res.length;
+
+        var cssBytes = 0;
+        var totalRequests = 1; // 1 for the document
+        var externalRequests = 0;
+        var pageOrigin = window.location.origin;
+
+        for (var i = 0; i < resources.length; i++) {
+          var res = resources[i];
+          totalRequests++;
+          var resBytes = res.decodedBodySize || res.encodedBodySize || res.transferSize || 0;
+          cssBytes += resBytes;
+          if (pageOrigin && res.name && !res.name.startsWith(pageOrigin) && !res.name.startsWith('data:') && !res.name.startsWith('blob:')) {
+            externalRequests++;
+          }
+        }
+
+        // Fallback for CSS size if ResourceTiming was masked by browser/protocol
+        if (cssBytes === 0 && document.styleSheets.length > 0) {
+          try {
+            var sheet = document.styleSheets[0];
+            if (sheet.cssRules) {
+              var cssText = '';
+              for (var r = 0; r < sheet.cssRules.length; r++) {
+                cssText += sheet.cssRules[r].cssText;
+              }
+              cssBytes = new Blob([cssText]).size;
+            }
+          } catch (e) {
+            cssBytes = 12000;
+          }
+        }
+
+        var totalBytes = htmlBytes + cssBytes;
+        var kb = (totalBytes / 1024).toFixed(1);
+
+        var sizeEl = document.getElementById('page-size');
+        if (sizeEl) {
+          sizeEl.textContent = kb + 'KB';
+        }
+
+        var reqEl = document.getElementById('request-count');
+        if (reqEl) {
+          reqEl.textContent = totalRequests + ' (' + externalRequests + ' ext)';
+        }
+
+        var noteEl = document.getElementById('ext-requests-note');
+        if (noteEl) {
+          noteEl.innerHTML = externalRequests === 0 
+            ? '&check; 0 external requests' 
+            : '&times; ' + externalRequests + ' external requests';
+        }
       }
+
       if (document.readyState === 'complete') {
-        updateSpecs();
+        calculateMetrics();
       } else {
-        window.addEventListener('load', updateSpecs);
+        window.addEventListener('load', calculateMetrics);
+      }
+
+      // Dialog controller: lazy loads report into iframe on demand
+      var openBtn = document.getElementById('open-audit-btn');
+      var closeBtn = document.getElementById('close-audit-btn');
+      var dialog = document.getElementById('lighthouse-dialog');
+      var iframe = document.getElementById('audit-iframe');
+
+      if (openBtn && dialog) {
+        openBtn.addEventListener('click', function () {
+          if (iframe && !iframe.src) {
+            iframe.src = 'lighthouse-report.report.html';
+          }
+          if (typeof dialog.showModal === 'function') {
+            dialog.showModal();
+          } else {
+            window.open('lighthouse-report.report.html', '_blank');
+          }
+        });
+      }
+
+      if (closeBtn && dialog) {
+        closeBtn.addEventListener('click', function () {
+          dialog.close();
+        });
+      }
+
+      if (dialog) {
+        dialog.addEventListener('click', function (e) {
+          if (e.target === dialog) {
+            dialog.close();
+          }
+        });
       }
     })();
   </script>

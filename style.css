@@ -11,7 +11,7 @@
   /* Colors */
   --color-bg: #f8fafc;
   --color-text: #1e293b;
-  --color-text-muted: #64748b;
+  --color-text-muted: #475569;
   --color-link: #2563eb;
   --color-link-hover: #1d4ed8;
   --color-header-bg: #1e293b;
@@ -180,6 +180,112 @@ body {
   margin-top: 0.25rem;
   color: var(--color-text-muted);
   font-size: 0.65rem;
+}
+
+.audit-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--color-link);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  display: inline;
+}
+
+.audit-btn:hover,
+.audit-btn:focus-visible {
+  color: var(--color-link-hover);
+}
+
+.audit-btn span {
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   5b. Audit Report Modal (Native <dialog>)
+   -------------------------------------------------------------------------- */
+
+.audit-dialog {
+  width: 90vw;
+  max-width: 1100px;
+  height: 85vh;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin: auto;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.audit-dialog::backdrop {
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(2px);
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--color-header-bg);
+  color: var(--color-header-text);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dialog-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-header-text);
+}
+
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dialog-ext-link {
+  color: #93c5fd;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-decoration: underline;
+}
+
+.dialog-ext-link:hover {
+  color: #bfdbfe;
+}
+
+.dialog-close-btn {
+  background: none;
+  border: none;
+  color: var(--color-header-text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.dialog-close-btn:hover,
+.dialog-close-btn:focus-visible {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.dialog-body {
+  width: 100%;
+  height: calc(85vh - 52px);
+}
+
+.dialog-body iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
 
