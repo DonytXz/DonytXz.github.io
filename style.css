@@ -161,6 +161,26 @@ body {
   gap: 0.5rem;
 }
 
+.lang-btn-content {
+  display: inline-flex;
+  align-items: center;
+}
+
+.flag-icon {
+  width: 1.15em;
+  height: 0.85em;
+  display: inline-block;
+  vertical-align: -0.1em;
+  border-radius: 1.5px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+  margin: 0 0.35rem 0 0.15rem;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .flag-icon {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
 .theme-toggle {
   display: inline-flex;
   align-items: center;
@@ -815,5 +835,12 @@ html[lang="en"] [data-lang="es"] {
 
 html[lang="es"] [data-lang="en"] {
   display: none !important;
+}
+
+/* In Spanish, always break language and theme switch controls onto a new line */
+html[lang="es"] .nav-controls {
+  flex-basis: 100%;
+  width: 100%;
+  margin-top: 0.35rem;
 }
 
