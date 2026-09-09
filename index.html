@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donato Alvarez — Frontend Developer</title>
+  <meta name="description" content="Frontend developer portfolio. I build fast, accessible and maintainable web applications with clean code and solid fundamentals.">
+  <meta name="author" content="Donato Alvarez">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Donato Alvarez — Frontend Developer">
+  <meta property="og:description" content="Frontend developer portfolio. Fast, accessible, zero-dependency.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://donato.dev">
+
+  <!-- Favicon: inline SVG, zero external requests -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='12' fill='%231e293b'/%3E%3Ctext x='50' y='68' font-family='monospace' font-size='48' font-weight='bold' fill='%23f8fafc' text-anchor='middle'%3EDA%3C/text%3E%3C/svg%3E">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Skip to content: accessibility -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-identity">
+        <h1 class="site-title">Donato Alvarez</h1>
+        <p class="site-subtitle">Frontend Developer</p>
+      </div>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <aside class="system-specs" aria-label="Page performance metrics">
+        <strong>System Specs</strong>
+        <ul>
+          <li>Page size: <span id="page-size">~12KB</span></li>
+          <li>Requests: <span id="request-count">0</span></li>
+          <li>Lighthouse: <span>100/100</span></li>
+          <li class="specs-note">• 0 external requests</li>
+        </ul>
+      </aside>
+    </div>
+  </header>
+
+  <main id="main" class="content">
+
+    <section id="about" aria-labelledby="about-heading">
+      <h2 id="about-heading">About Me</h2>
+      <p>
+        I'm a frontend developer with 5 years of experience building
+        fast, accessible and maintainable web applications. I care about
+        performance, clean code and the fundamentals of web technologies.
+      </p>
+      <p>
+        This portfolio itself is the proof — built with zero dependencies,
+        pure semantic HTML and a single CSS file. No frameworks. No bundlers.
+        No npm. Just the platform.
+      </p>
+    </section>
+
+    <hr>
+
+    <section id="projects" aria-labelledby="projects-heading">
+      <h2 id="projects-heading">Featured Projects</h2>
+
+      <article class="project">
+        <h3><a href="#">Portfolio</a> <span class="project-tag">(this site)</span></h3>
+        <p>A minimal, fast and accessible portfolio built with vanilla HTML, CSS and JS.</p>
+      </article>
+
+      <article class="project">
+        <h3><a href="#">Task Manager</a></h3>
+        <p>A lightweight task management app with local storage.</p>
+      </article>
+
+      <article class="project">
+        <h3><a href="#">Data Visualizer</a></h3>
+        <p>Interactive charts built with Plot.js and vanilla JS.</p>
+      </article>
+    </section>
+
+    <hr>
+
+    <section id="skills" aria-labelledby="skills-heading">
+      <h2 id="skills-heading">Skills</h2>
+      <div class="skills-grid">
+        <div class="skill-group">
+          <h3>Languages</h3>
+          <ul>
+            <li>JavaScript / TypeScript</li>
+            <li>HTML5 / CSS3</li>
+            <li>Python</li>
+          </ul>
+        </div>
+        <div class="skill-group">
+          <h3>Frameworks</h3>
+          <ul>
+            <li>Angular</li>
+            <li>React</li>
+            <li>Node.js</li>
+          </ul>
+        </div>
+        <div class="skill-group">
+          <h3>Tools</h3>
+          <ul>
+            <li>Git / GitHub</li>
+            <li>Docker</li>
+            <li>CI/CD Pipelines</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <hr>
+
+    <section id="contact" aria-labelledby="contact-heading">
+      <h2 id="contact-heading">Contact</h2>
+      <p>Want to work together? Reach out:</p>
+      <ul class="contact-list">
+        <li><a href="mailto:donato@example.com">donato@example.com</a></li>
+        <li><a href="https://github.com/donato" rel="noopener noreferrer">GitHub</a></li>
+        <li><a href="https://linkedin.com/in/donato" rel="noopener noreferrer">LinkedIn</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 Donato Alvarez. Built from scratch with HTML &amp; CSS.</p>
+  </footer>
+
+  <!-- Tiny inline script: calculate actual page size -->
+  <script>
+    (function () {
+      var perf = performance.getEntriesByType('navigation')[0];
+      if (perf && perf.transferSize) {
+        var kb = (perf.transferSize / 1024).toFixed(1);
+        var el = document.getElementById('page-size');
+        if (el) el.textContent = kb + 'KB';
+      }
+      var res = performance.getEntriesByType('resource');
+      var el2 = document.getElementById('request-count');
+      if (el2) el2.textContent = res.length;
+    })();
+  </script>
+
+</body>
+</html>
