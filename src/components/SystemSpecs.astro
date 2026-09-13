@@ -1,0 +1,43 @@
+---
+import LocalizedText from './LocalizedText.astro';
+import audit from '../data/audit.json';
+const score = audit.scores.performance;
+---
+
+<aside class="system-specs" aria-label="Page performance metrics">
+  <strong>System Specs</strong>
+  <ul>
+    <li>
+      <LocalizedText text={{ en: 'Page weight:', es: 'Peso de página:' }} />{' '}
+      <span id="page-size">—</span>
+    </li>
+    <li>
+      <LocalizedText text={{ en: 'Requests:', es: 'Solicitudes:' }} />{' '}
+      <span id="request-count">—</span>
+    </li>
+    <li>
+      Lighthouse:
+      <button
+        type="button"
+        id="open-audit-btn"
+        class="audit-btn"
+        aria-haspopup="dialog"
+        title="View the dated production-preview Lighthouse report"
+      >
+        {score === null ? '—' : `${score}/100`}{' '}
+        <LocalizedText text={{ en: '[Report ↗]', es: '[Reporte ↗]' }} />
+      </button>
+      <noscript>
+        <a href="/lighthouse-report.report.html">
+          <LocalizedText text={{ en: 'Report ↗', es: 'Reporte ↗' }} />
+        </a>
+      </noscript>
+    </li>
+    <li class="specs-note" id="ext-requests-note">
+      <span id="ext-requests-symbol" aria-hidden="true"></span>{' '}
+      <LocalizedText
+        text={{ en: 'Measuring requests…', es: 'Midiendo solicitudes…' }}
+      />
+    </li>
+  </ul>
+</aside>

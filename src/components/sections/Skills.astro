@@ -1,0 +1,38 @@
+---
+import { skills } from '../../data/skills';
+import { languages } from '../../data/portfolio';
+import LocalizedText from '../LocalizedText.astro';
+import PortfolioSection from '../PortfolioSection.astro';
+---
+
+<PortfolioSection id="skills">
+  <div class="skills-grid">
+    {skills.map((group) => (
+      <div class="skill-group">
+        <h3>
+          <LocalizedText text={group.title} />
+        </h3>
+        <ul>
+          {group.items.map((item) =>
+            typeof item.text === 'string' ? (
+              <li>
+                {item.label && (
+                  <>
+                    <strong>{item.label}</strong>{' '}
+                  </>
+                )}
+                {item.text}
+              </li>
+            ) : (
+              languages.map((lang) => (
+                <li data-lang={lang} lang={lang}>
+                  {typeof item.text !== 'string' && item.text[lang]}
+                </li>
+              ))
+            ),
+          )}
+        </ul>
+      </div>
+    ))}
+  </div>
+</PortfolioSection>

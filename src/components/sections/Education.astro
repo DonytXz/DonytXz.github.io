@@ -1,0 +1,70 @@
+---
+import {
+  education,
+  certifications,
+  spokenLanguages,
+} from '../../data/education';
+import { languages } from '../../data/portfolio';
+import Flag from '../Flag.astro';
+import LocalizedText from '../LocalizedText.astro';
+import PortfolioSection from '../PortfolioSection.astro';
+---
+
+<PortfolioSection id="education">
+  {education.map((item) => (
+    <div class="edu-item">
+      {languages.map((lang) => (
+        <h3 class="edu-title" data-lang={lang} lang={lang}>
+          {item.title[lang]}
+        </h3>
+      ))}
+      <div class="edu-school">{item.school}</div>
+      {languages.map((lang) => (
+        <div class="edu-meta" data-lang={lang} lang={lang}>
+          {item.meta[lang]}
+        </div>
+      ))}
+    </div>
+  ))}
+  <h3 class="education-subheading">
+    <LocalizedText
+      text={{
+        en: 'Certifications & Awards',
+        es: 'Certificados y Reconocimientos',
+      }}
+    />
+  </h3>
+  <ul class="cert-list">
+    {certifications.map(({ title, detail }) => (
+      <li>
+        <strong>{title}</strong>
+        {detail && (
+          <>
+            {' '}
+            —{' '}
+            {typeof detail === 'string' ? (
+              detail
+            ) : (
+              <LocalizedText text={detail} />
+            )}
+          </>
+        )}
+      </li>
+    ))}
+  </ul>
+  <h3 class="education-subheading">
+    <LocalizedText text={{ en: 'Languages', es: 'Idiomas' }} />
+  </h3>
+  <ul class="cert-list">
+    {spokenLanguages.map(({ country, label, level, description }) => (
+      <li>
+        <Flag country={country} />{' '}
+        <strong>
+          <LocalizedText text={label} />
+        </strong>
+        &nbsp;{level && <>{level} —&nbsp;</>}
+        <LocalizedText text={description} />
+      </li>
+    ))}
+  </ul>
+</PortfolioSection>

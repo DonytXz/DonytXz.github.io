@@ -1,0 +1,19 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "astro-runtime": {
+      "type": "remote",
+      "url": "http://127.0.0.1:4321/__mcp/sse",
+      "enabled": true,
+      "oauth": false,
+      "timeout": 30000
+    },
+    "astro-docs": {
+      "type": "remote",
+      "url": "https://mcp.docs.astro.build/mcp",
+      "enabled": true,
+      "oauth": false,
+      "timeout": 30000
+    }
+  }
+}

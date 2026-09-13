@@ -1,0 +1,13 @@
+---
+import { languages, type Localized } from '../data/portfolio';
+interface Props {
+  text: Localized;
+}
+const { text } = Astro.props;
+---
+
+{languages.map((lang) => (
+  <span data-lang={lang} lang={lang}>
+    {text[lang]}
+  </span>
+))}

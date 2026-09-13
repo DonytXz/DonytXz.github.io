@@ -1,0 +1,29 @@
+---
+import { profile, languages, sections } from '../data/portfolio';
+import LocalizedText from './LocalizedText.astro';
+import PreferenceControls from './PreferenceControls.astro';
+import SystemSpecs from './SystemSpecs.astro';
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-identity">
+      <h1 class="site-title">{profile.name}</h1>
+      {languages.map((lang) => (
+        <p class="site-subtitle" data-lang={lang} lang={lang}>
+          {profile.subtitle[lang]}
+        </p>
+      ))}
+    </div>
+    <nav class="site-nav" aria-label="Main navigation">
+      {sections.map(({ id, nav }) => (
+        <a href={`#${id}`}>
+          <LocalizedText text={nav} />
+        </a>
+      ))}
+      <PreferenceControls />
+    </nav>
+    <SystemSpecs />
+  </div>
+  <hr class="header-divider" />
+</header>

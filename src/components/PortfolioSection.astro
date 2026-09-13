@@ -1,0 +1,16 @@
+---
+import { sections, type SectionId } from '../data/portfolio';
+import LocalizedText from './LocalizedText.astro';
+interface Props {
+  id: SectionId;
+}
+const { id } = Astro.props;
+const section = sections.find((section) => section.id === id)!;
+---
+
+<section id={id} aria-labelledby={`${id}-heading`}>
+  <h2 id={`${id}-heading`}>
+    <LocalizedText text={section.title} />
+  </h2>
+  <slot />
+</section>

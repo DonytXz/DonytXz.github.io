@@ -1,0 +1,14 @@
+---
+import { about, languages } from '../../data/portfolio';
+import PortfolioSection from '../PortfolioSection.astro';
+---
+
+<PortfolioSection id="about">
+  {languages.map((lang) => (
+    <div data-lang={lang} lang={lang}>
+      {about[lang].map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </div>
+  ))}
+</PortfolioSection>

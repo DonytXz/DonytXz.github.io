@@ -1,0 +1,34 @@
+---
+import { contacts, contactIntro } from '../../data/contact';
+import { languages } from '../../data/portfolio';
+import LocalizedText from '../LocalizedText.astro';
+import PortfolioSection from '../PortfolioSection.astro';
+---
+
+<PortfolioSection id="contact">
+  {languages.map((lang) => (
+    <p data-lang={lang} lang={lang}>
+      {contactIntro[lang]}
+    </p>
+  ))}
+  <ul class="contact-list">
+    {contacts.map(({ label, href, text, external }) => (
+      <li>
+        <span class="contact-label">
+          <LocalizedText text={label} />
+        </span>{' '}
+        {href ? (
+          <a
+            href={href}
+            target={external ? '_blank' : undefined}
+            rel={external ? 'noopener noreferrer' : undefined}
+          >
+            {text}
+          </a>
+        ) : (
+          text
+        )}
+      </li>
+    ))}
+  </ul>
+</PortfolioSection>

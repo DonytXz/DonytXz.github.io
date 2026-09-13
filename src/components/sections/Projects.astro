@@ -1,0 +1,35 @@
+---
+import { projects } from '../../data/projects';
+import { languages } from '../../data/portfolio';
+import LocalizedText from '../LocalizedText.astro';
+import PortfolioSection from '../PortfolioSection.astro';
+---
+
+<PortfolioSection id="projects">
+  {projects.map((project) => (
+    <article class="project">
+      <h3>
+        <a href={project.href}>
+          <LocalizedText text={project.title} />
+        </a>
+        {project.currentSite && (
+          <>
+            {' '}
+            <span class="project-tag" data-lang="en" lang="en">
+              (this site)
+            </span>
+            <span class="project-tag" data-lang="es" lang="es">
+              (este sitio)
+            </span>
+          </>
+        )}
+      </h3>
+      {languages.map((lang) => (
+        <p data-lang={lang} lang={lang}>
+          {project.description[lang]}
+        </p>
+      ))}
+      <div class="project-tech">{project.technologies}</div>
+    </article>
+  ))}
+</PortfolioSection>
