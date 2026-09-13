@@ -1,0 +1,58 @@
+---
+interface Props {
+  country: 'MX' | 'US' | 'FR';
+}
+const { country } = Astro.props;
+const stars = [35, 70, 105, 140, 175, 210].flatMap((y, row) =>
+  (row % 2 === 0 ? [40, 90, 140, 190, 230] : [65, 115, 165, 210]).map((x) => ({
+    x,
+    y,
+  })),
+);
+---
+
+<svg
+  class="flag-icon"
+  viewBox="0 0 640 480"
+  aria-hidden="true"
+  focusable="false"
+>
+  {country === 'US' ? (
+    <>
+      <rect width="640" height="480" fill="#bd3d44" />
+      <path
+        stroke="#ffffff"
+        stroke-width="37"
+        d="M0 55.5h640M0 129.5h640M0 203.5h640M0 277.5h640M0 351.5h640M0 425.5h640"
+      />
+      <rect width="260" height="258" fill="#192f5d" />
+      <g fill="#ffffff">
+        {stars.map(({ x, y }) => (
+          <circle cx={x} cy={y} r="7" />
+        ))}
+      </g>
+    </>
+  ) : (
+    <>
+      <path
+        fill={country === 'MX' ? '#006847' : '#002654'}
+        d="M0 0h213.3v480H0z"
+      />
+      <path fill="#ffffff" d="M213.3 0h213.4v480H213.3z" />
+      <path fill="#ce1126" d="M426.7 0H640v480H426.7z" />
+      {country === 'MX' && (
+        <>
+          <circle cx="320" cy="240" r="34" fill="#7a5526" />
+          <path
+            d="M305 235 c0-15 15-20 25-10 c10-10 20 0 15 15 c-5 15-25 25-40 0"
+            fill="#a07835"
+          />
+          <path
+            d="M300 255 c20 20 40 10 45-5 c-15 5-30 0-45-10"
+            fill="#2d6830"
+          />
+        </>
+      )}
+    </>
+  )}
+</svg>

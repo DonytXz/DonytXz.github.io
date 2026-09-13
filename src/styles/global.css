@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------
-   1. Custom Properties (Design Tokens)
+   1. Custom Properties (Original Portfolio Design Tokens)
    -------------------------------------------------------------------------- */
 
 :root {
@@ -21,13 +21,14 @@
   --content-padding: 1.5rem;
 
   /* Typography */
-  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-body:
+    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'Courier New', Courier, monospace;
   --font-size-base: 1rem;
   --line-height-base: 1.7;
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   /* Colors — Dark Theme */
   --color-bg: #0f172a;
   --color-text: #f1f5f9;
@@ -41,7 +42,6 @@
   --color-modal-header-bg: #020617;
   --color-modal-header-text: #f8fafc;
 }
-
 
 /* --------------------------------------------------------------------------
    2. Reset & Base
@@ -66,9 +66,10 @@ body {
   line-height: var(--line-height-base);
   color: var(--color-text);
   background-color: var(--color-bg);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
-
 
 /* --------------------------------------------------------------------------
    3. Skip Link (Accessibility)
@@ -90,7 +91,6 @@ body {
 .skip-link:focus {
   top: 0;
 }
-
 
 /* --------------------------------------------------------------------------
    4. Header
@@ -177,7 +177,7 @@ body {
   flex-shrink: 0;
 }
 
-[data-theme="dark"] .flag-icon {
+[data-theme='dark'] .flag-icon {
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
@@ -196,7 +196,10 @@ body {
   cursor: pointer;
   line-height: 1.4;
   user-select: none;
-  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
 
 .theme-toggle:hover,
@@ -213,7 +216,6 @@ body {
   border: none;
   border-top: 1px solid var(--color-border);
 }
-
 
 /* --------------------------------------------------------------------------
    5. System Specs Widget
@@ -291,7 +293,9 @@ body {
   height: 85vh;
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.25),
+    0 10px 10px -5px rgba(0, 0, 0, 0.1);
   padding: 0;
   margin: auto;
   overflow: hidden;
@@ -318,7 +322,7 @@ body {
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
-  color: var(--color-header-text);
+  color: var(--color-modal-header-text);
 }
 
 .dialog-actions {
@@ -341,7 +345,7 @@ body {
 .dialog-close-btn {
   background: none;
   border: none;
-  color: var(--color-header-text);
+  color: var(--color-modal-header-text);
   font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
@@ -364,7 +368,6 @@ body {
   height: 100%;
   border: none;
 }
-
 
 /* --------------------------------------------------------------------------
    6. Main Content
@@ -403,7 +406,6 @@ body {
   margin: 2rem 0;
 }
 
-
 /* --------------------------------------------------------------------------
    7. Links
    -------------------------------------------------------------------------- */
@@ -424,7 +426,6 @@ a:focus-visible {
   outline-offset: 2px;
   border-radius: 2px;
 }
-
 
 /* --------------------------------------------------------------------------
    8. Experience & Timeline
@@ -502,7 +503,10 @@ a:focus-visible {
   cursor: pointer;
   user-select: none;
   list-style: none;
-  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
 
 .toggle-button::-webkit-details-marker {
@@ -573,7 +577,6 @@ a:focus-visible {
   color: var(--color-text-muted);
 }
 
-
 /* --------------------------------------------------------------------------
    10. Skills Grid & Groups
    -------------------------------------------------------------------------- */
@@ -608,7 +611,6 @@ a:focus-visible {
 .skill-group li strong {
   font-weight: 600;
 }
-
 
 /* --------------------------------------------------------------------------
    11. Education & Certifications
@@ -646,7 +648,6 @@ a:focus-visible {
   margin-bottom: 0.35rem;
 }
 
-
 /* --------------------------------------------------------------------------
    12. Contact
    -------------------------------------------------------------------------- */
@@ -671,7 +672,6 @@ a:focus-visible {
   min-width: 80px;
 }
 
-
 /* --------------------------------------------------------------------------
    13. Footer
    -------------------------------------------------------------------------- */
@@ -685,7 +685,6 @@ a:focus-visible {
   color: var(--color-text-muted);
   text-align: center;
 }
-
 
 /* --------------------------------------------------------------------------
    14. Responsive — Tablet (≤768px)
@@ -716,7 +715,6 @@ a:focus-visible {
     grid-template-columns: 1fr;
   }
 }
-
 
 /* --------------------------------------------------------------------------
    15. Responsive — Mobile (≤480px)
@@ -786,7 +784,6 @@ a:focus-visible {
   }
 }
 
-
 /* --------------------------------------------------------------------------
    16. Print Styles
    -------------------------------------------------------------------------- */
@@ -824,23 +821,89 @@ a:focus-visible {
   }
 }
 
-
 /* --------------------------------------------------------------------------
    17. Internationalization (i18n)
    -------------------------------------------------------------------------- */
 
-html[lang="en"] [data-lang="es"] {
+html[lang='en'] [data-lang='es'] {
   display: none !important;
 }
 
-html[lang="es"] [data-lang="en"] {
+html[lang='es'] [data-lang='en'] {
   display: none !important;
 }
 
 /* In Spanish, always break language and theme switch controls onto a new line */
-html[lang="es"] .nav-controls {
+html[lang='es'] .nav-controls {
   flex-basis: 100%;
   width: 100%;
   margin-top: 0.35rem;
 }
 
+/* Progressive enhancement and accessibility refinements. */
+html:not([data-js]) .nav-controls,
+html:not([data-js]) #open-audit-btn,
+html:not([data-js]) #ext-requests-note {
+  display: none;
+}
+
+.content .education-subheading {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.audit-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-header {
+  flex-shrink: 0;
+  gap: 1rem;
+}
+.dialog-body {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+}
+.audit-context {
+  font-size: 0.7rem;
+  margin-top: 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}
+
+@media print {
+  :root,
+  [data-theme='dark'] {
+    --color-bg: #fff;
+    --color-text: #000;
+    --color-text-muted: #333;
+    --color-link: #000;
+    --color-border: #999;
+  }
+  .content section {
+    content-visibility: visible;
+    contain-intrinsic-size: none;
+  }
+  /* Print closed disclosures even when JavaScript is disabled (modern browsers). */
+  details::details-content {
+    content-visibility: visible;
+    height: auto;
+  }
+  .audit-dialog[open] {
+    display: none;
+  }
+}

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+.artifacts/
+.firecrawl/
+test-results/
+playwright-report/
+package-lock.json
+public/lighthouse-report.report.*
+lighthouse-report.report.*

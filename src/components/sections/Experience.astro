@@ -1,0 +1,36 @@
+---
+import { experience } from '../../data/experience';
+import ExperienceRole from '../ExperienceRole.astro';
+import PortfolioSection from '../PortfolioSection.astro';
+const featured = experience.filter((role) => role.featured);
+const earlier = experience.filter((role) => !role.featured);
+---
+
+<PortfolioSection id="experience">
+  <div class="experience-list">
+    {featured.map((role) => (
+      <ExperienceRole role={role} />
+    ))}
+  </div>
+  <details class="experience-expand">
+    <summary class="toggle-button">
+      <span data-lang="en" lang="en">
+        <span class="expand-text">
+          [ + ] Show full career history ({earlier.length} earlier positions)
+        </span>
+        <span class="collapse-text">[ − ] Show less</span>
+      </span>
+      <span data-lang="es" lang="es">
+        <span class="expand-text">
+          [ + ] Ver trayectoria completa ({earlier.length} puestos anteriores)
+        </span>
+        <span class="collapse-text">[ − ] Ver menos</span>
+      </span>
+    </summary>
+    <div class="detailed-experience">
+      {earlier.map((role) => (
+        <ExperienceRole role={role} />
+      ))}
+    </div>
+  </details>
+</PortfolioSection>

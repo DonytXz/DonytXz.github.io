@@ -1,0 +1,12 @@
+---
+import { footer, languages, profile } from '../data/portfolio';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  {languages.map((lang) => (
+    <p data-lang={lang} lang={lang}>
+      © {year} {profile.name} · {footer[lang]}
+    </p>
+  ))}
+</footer>

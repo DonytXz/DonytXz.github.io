@@ -1,0 +1,28 @@
+---
+import { languages } from '../data/portfolio';
+import type { Role } from '../data/experience';
+interface Props {
+  role: Role;
+}
+const { role } = Astro.props;
+---
+
+<article class="role">
+  {languages.map((lang) => {
+    const copy = role.content[lang];
+    return (
+      <div data-lang={lang} lang={lang}>
+        <header class="role-header">
+          <h3 class="role-title">{copy.title}</h3>
+          <div class="role-company">{copy.company}</div>
+          <div class="role-meta">{copy.meta}</div>
+        </header>
+        <ul class="role-bullets">
+          {copy.bullets.map((bullet) => (
+            <li>{bullet}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  })}
+</article>
