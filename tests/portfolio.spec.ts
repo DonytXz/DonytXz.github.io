@@ -1,14 +1,15 @@
 import { execFileSync } from 'node:child_process';
 import { expect, test } from '@playwright/test';
 
-// The immutable, pre-migration source is the content contract for this baseline.
+// The immutable, pre-migration source protects the published CV copy. The user
+// disabled Projects and removed Skills/Education from the page in September 2026.
 const original = execFileSync(
   'git',
   ['show', '012e171df759f1d7649836577bfd4f2b3835218e:index.html'],
   { encoding: 'utf8' },
 );
 
-test('preserves the original CV content in both languages', async ({
+test('preserves the published CV content in both languages', async ({
   page,
 }) => {
   await page.goto('/');
@@ -30,14 +31,9 @@ test('preserves the original CV content in both languages', async ({
     const selectors = [
       '.header-identity',
       '#experience',
-      '#skills',
-      '#education',
       '#contact',
       '#about > div[data-lang="en"] > p:first-child',
       '#about > div[data-lang="es"] > p:first-child',
-      '#projects .project:nth-of-type(1)',
-      '#projects .project:nth-of-type(2)',
-      '#projects .project:nth-of-type(3)',
     ];
     return ['en', 'es'].flatMap((lang) =>
       selectors.map((selector) => ({
@@ -53,16 +49,11 @@ test('preserves the original CV content in both languages', async ({
     await page
       .locator('main > section')
       .evaluateAll((nodes) => nodes.map((node) => node.id)),
-  ).toEqual([
-    'about',
-    'experience',
-    'projects',
-    'skills',
-    'education',
-    'contact',
-  ]);
+  ).toEqual(['about', 'experience', 'contact']);
   await expect(page.locator('.role')).toHaveCount(8);
-  await expect(page.locator('.project')).toHaveCount(4);
+  await expect(
+    page.locator('#projects, #skills, #education, .project'),
+  ).toHaveCount(0);
 });
 
 for (const lang of ['en', 'es'] as const) {
@@ -70,10 +61,21 @@ for (const lang of ['en', 'es'] as const) {
     test(`${lang}/${theme}: preferences persist and layout fits`, async ({
       page,
     }, testInfo) => {
+      await page.emulateMedia({ colorScheme: 'dark' });
       await page.goto('/');
+      await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+      await expect(page.locator('body')).toHaveCSS(
+        'background-color',
+        'rgb(250, 247, 240)',
+      );
       if (lang === 'es') await page.locator('#lang-toggle').click();
-      if (theme === 'dark') await page.locator('#theme-toggle').click();
+      await page.locator('#theme-toggle').click();
+      if (theme === 'light') await page.locator('#theme-toggle').click();
       await page.reload();
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe(
+        theme,
+      );
       await expect(page.locator('html')).toHaveAttribute('lang', lang);
       await expect(page.locator('#theme-toggle')).toHaveAttribute(
         'aria-pressed',
@@ -81,7 +83,7 @@ for (const lang of ['en', 'es'] as const) {
       );
       await expect(page.locator('body')).toHaveCSS(
         'background-color',
-        theme === 'dark' ? 'rgb(15, 23, 42)' : 'rgb(248, 250, 252)',
+        theme === 'dark' ? 'rgb(15, 23, 42)' : 'rgb(250, 247, 240)',
       );
       for (const section of await page.locator('main > section').all())
         await section.scrollIntoViewIfNeeded();
@@ -90,10 +92,6 @@ for (const lang of ['en', 'es'] as const) {
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       ).toBe(true);
-      // Force offscreen painting only for the screenshot; preserve the production optimization.
-      await page.addStyleTag({
-        content: '.content section { content-visibility: visible !important; }',
-      });
       await page.evaluate(() => scrollTo(0, 0));
       await page.screenshot({
         path: testInfo.outputPath(`${lang}-${theme}.png`),
@@ -163,7 +161,9 @@ test('preferences work when browser storage is blocked', async ({ page }) => {
       },
     });
   });
+  await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await page.locator('#lang-toggle').click();
   await page.locator('#theme-toggle').click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
@@ -174,45 +174,213 @@ test('preferences work when browser storage is blocked', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test('core CV and disclosure work without JavaScript', async ({ browser }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false });
+test('core CV and disclosure work without JavaScript', async ({
+  browser,
+  viewport,
+}) => {
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    colorScheme: 'dark',
+    viewport,
+  });
   try {
     const page = await context.newPage();
     await page.goto('http://127.0.0.1:4322/');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(page.locator('body')).toHaveCSS(
+      'background-color',
+      'rgb(250, 247, 240)',
+    );
     await expect(page.locator('h1')).toHaveText('Donato Alvarez');
     await expect(page.locator('.nav-controls')).not.toBeVisible();
+    await expect(page.locator('.reading-column > .system-specs')).toHaveCount(
+      1,
+    );
     await page.locator('summary').click();
     await expect(page.locator('.detailed-experience')).toBeVisible();
     await expect(
-      page.locator('a[href="mailto:me@donatoalvarez.dev"]'),
+      page.locator('#contact a[href="mailto:me@donatoalvarez.dev"]'),
     ).toBeVisible();
+    await page.locator('.site-nav a[href="#contact"]').click();
+    await expect(page).toHaveURL(/#contact$/);
+    await expect(page.locator('#contact-heading')).toBeInViewport();
+    await expect(page.locator('.site-nav [aria-current]')).toHaveCount(0);
   } finally {
     await context.close();
   }
 });
 
-test('printing exposes the full CV and restores disclosure state', async ({
+for (const lang of ['en', 'es'] as const) {
+  test(`${lang}: printing exposes the full CV and restores disclosure state`, async ({
+    page,
+  }, testInfo) => {
+    await page.goto('/');
+    if (lang === 'es') await page.locator('#lang-toggle').click();
+    await page.locator('#theme-toggle').click();
+    await page.emulateMedia({ media: 'print' });
+    await expect(page.locator('body')).toHaveCSS(
+      'background-color',
+      'rgb(255, 255, 255)',
+    );
+    await expect(page.locator('.site-nav')).not.toBeVisible();
+    await expect(page.locator('.nav-controls')).not.toBeVisible();
+    await expect(page.locator('.header-bottom')).not.toBeVisible();
+    await expect(page.locator('.system-specs')).not.toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('lang', lang);
+    await expect(
+      page.locator('.detailed-experience .role').last(),
+    ).toBeVisible();
+    await page.pdf({ path: testInfo.outputPath('cv.pdf'), format: 'A4' });
+    await page.emulateMedia({ media: 'screen' });
+    await expect(page.locator('.experience-expand')).not.toHaveAttribute(
+      'open',
+      '',
+    );
+    await expect(page.locator('body')).toHaveCSS(
+      'background-color',
+      'rgb(15, 23, 42)',
+    );
+    await page.locator('summary').click();
+    await page.pdf();
+    await expect(page.locator('.experience-expand')).toHaveAttribute(
+      'open',
+      '',
+    );
+  });
+}
+
+test('published navigation and contact destinations are preserved', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const comparison = await page.evaluate((source) => {
+    const old = new DOMParser().parseFromString(source, 'text/html');
+    const publishedAnchors = ['#about', '#experience', '#contact'];
+    return ['.site-nav a', '#contact a'].map((selector) => ({
+      selector,
+      expected: Array.from(old.querySelectorAll(selector), (link) =>
+        link.getAttribute('href'),
+      ).filter(
+        (href) =>
+          selector !== '.site-nav a' || publishedAnchors.includes(href ?? ''),
+      ),
+      actual: Array.from(document.querySelectorAll(selector), (link) =>
+        link.getAttribute('href'),
+      ),
+    }));
+  }, original);
+  for (const { selector, actual, expected } of comparison)
+    expect(actual, selector).toEqual(expected);
+});
+
+test('active navigation handles direct hashes, long translated sections, and history', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/#experience');
+  const active = page.locator('.site-nav [aria-current="location"]');
+  await expect(active).toHaveAttribute('href', '#experience');
+  await page.locator('summary').click();
+  await page.locator('#lang-toggle').click();
+  await page.locator('.site-nav a[href="#experience"]').click();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await page.evaluate(() => {
+    const section = document.getElementById('experience')!;
+    scrollTo(0, scrollY + section.getBoundingClientRect().top + innerHeight);
+  });
+  await expect(active).toHaveAttribute('href', '#experience');
+  await page.locator('summary').click();
+  for (const id of ['about', 'experience', 'contact']) {
+    await page.locator(`.site-nav a[href="#${id}"]`).click();
+    await expect(active).toHaveAttribute('href', `#${id}`);
+    await expect(active).toHaveCount(1);
+    await expect(page.locator(`#${id}-heading`)).toBeInViewport();
+  }
+  await page.goBack();
+  await expect(page).toHaveURL(/#experience$/);
+  await expect(active).toHaveAttribute('href', '#experience');
+  await page.reload();
+  await expect(active).toHaveAttribute('href', '#experience');
+});
+
+test('Spanish layouts fit narrow, tablet, and short desktop screens', async ({
   page,
 }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
+  await page.locator('#lang-toggle').click();
   await page.locator('#theme-toggle').click();
-  await page.emulateMedia({ media: 'print' });
-  await expect(page.locator('body')).toHaveCSS(
-    'background-color',
-    'rgb(255, 255, 255)',
+  await expect(page.locator('.social-links a')).toHaveCount(2);
+  await expect(page.locator('.social-links a[href^="mailto:"]')).toHaveCount(0);
+  await expect(page.locator('#contact a[href^="mailto:"]')).toHaveCount(1);
+  await expect(page.locator('.system-specs strong')).toHaveText(
+    /^tras bambalinas$/i,
+    { useInnerText: true },
   );
-  await expect(page.locator('.site-nav')).not.toBeVisible();
-  await expect(page.locator('.detailed-experience .role').last()).toBeVisible();
-  await page.pdf({ path: testInfo.outputPath('cv.pdf'), format: 'A4' });
-  await page.emulateMedia({ media: 'screen' });
-  await expect(page.locator('.experience-expand')).not.toHaveAttribute(
-    'open',
-    '',
+  const initialRequests = await page.locator('#request-count').innerText();
+  for (const viewport of [
+    { width: 320, height: 740 },
+    { width: 768, height: 1024 },
+    { width: 1024, height: 700 },
+    { width: 1440, height: 1000 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.evaluate(() => scrollTo(0, 0));
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await expect(page.locator('#lang-toggle')).toHaveCount(1);
+    await expect(page.locator('#theme-toggle')).toHaveCount(1);
+    await expect(page.locator('#lang-toggle')).toBeInViewport();
+    await expect(page.locator('#theme-toggle')).toBeInViewport();
+    await expect(page.locator('.site-header')).toHaveCSS(
+      'position',
+      viewport.width === 1440 ? 'sticky' : 'static',
+    );
+    await expect(page.locator('.system-specs')).toHaveCount(1);
+    await expect(page.locator('#open-audit-btn')).toHaveCount(1);
+    await expect(page.locator('#request-count')).toHaveText(initialRequests);
+    if (viewport.width < 1024) {
+      await expect
+        .poll(() =>
+          page.locator('.system-specs').evaluate((widget) => {
+            const rect = widget.getBoundingClientRect();
+            const main = document
+              .querySelector('main')!
+              .getBoundingClientRect();
+            const footer = document
+              .querySelector('.site-footer')!
+              .getBoundingClientRect();
+            return rect.top >= main.bottom && rect.bottom <= footer.top;
+          }),
+        )
+        .toBe(true);
+    } else {
+      await expect(page.locator('.site-header .system-specs')).toHaveCount(1);
+    }
+    await page.screenshot({
+      path: testInfo.outputPath(`es-dark-${viewport.width}.png`),
+      fullPage: true,
+    });
+  }
+  await page.evaluate(() => scrollTo(0, 1500));
+  await expect(page.locator('#theme-toggle')).toBeInViewport();
+  await expect(page.locator('#open-audit-btn')).toBeInViewport();
+  await expect(page.locator('html')).toHaveCSS('scroll-behavior', 'auto');
+  await expect(page.locator('.nav-indicator').first()).toHaveCSS(
+    'transition-duration',
+    '0s',
   );
-  await expect(page.locator('body')).toHaveCSS(
-    'background-color',
-    'rgb(15, 23, 42)',
-  );
+  // Crossing back to mobile preserves the existing report listener and focus return.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator('.reading-column > .system-specs')).toHaveCount(1);
+  await page.locator('#open-audit-btn').click();
+  await expect(page.locator('dialog')).toBeVisible();
+  await page.locator('#close-audit-btn').click();
+  await expect(page.locator('#open-audit-btn')).toBeFocused();
+  await expect(page.locator('#request-count')).toHaveText(initialRequests);
 });
 
 test('production assets are local, error-free, and MCP is dev-only', async ({

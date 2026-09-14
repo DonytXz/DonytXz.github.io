@@ -2,7 +2,13 @@
 import { profile, languages, sections } from '../data/portfolio';
 import LocalizedText from './LocalizedText.astro';
 import PreferenceControls from './PreferenceControls.astro';
-import SystemSpecs from './SystemSpecs.astro';
+import SocialLinks from './SocialLinks.astro';
+
+// Match the published sections in index.astro. Projects is temporarily disabled;
+// Skills and Education have been removed from the page.
+const navigationSections = sections.filter(
+  ({ id }) => id === 'about' || id === 'experience' || id === 'contact',
+);
 ---
 
 <header class="site-header">
@@ -15,15 +21,19 @@ import SystemSpecs from './SystemSpecs.astro';
         </p>
       ))}
     </div>
+    <PreferenceControls />
     <nav class="site-nav" aria-label="Main navigation">
-      {sections.map(({ id, nav }) => (
-        <a href={`#${id}`}>
-          <LocalizedText text={nav} />
+      {navigationSections.map(({ id, nav }) => (
+        <a href={`#${id}`} class="section-link">
+          <span class="nav-indicator" aria-hidden="true" />
+          <span class="nav-label">
+            <LocalizedText text={nav} />
+          </span>
         </a>
       ))}
-      <PreferenceControls />
     </nav>
-    <SystemSpecs />
+    <div class="header-bottom">
+      <SocialLinks />
+    </div>
   </div>
-  <hr class="header-divider" />
 </header>

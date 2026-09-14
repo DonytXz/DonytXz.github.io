@@ -1,0 +1,27 @@
+---
+import { contacts } from '../data/contact';
+import Icon from './Icon.astro';
+import LocalizedText from './LocalizedText.astro';
+---
+
+<ul class="social-links">
+  {contacts
+    .filter((contact) => contact.href && contact.external)
+    .map((contact) => (
+      <li>
+        <a
+          href={contact.href}
+          target={contact.external ? '_blank' : undefined}
+          rel={contact.external ? 'noopener noreferrer' : undefined}
+        >
+          <LocalizedText
+            text={{
+              en: contact.label.en.replace(/:$/, ''),
+              es: contact.label.es.replace(/:$/, ''),
+            }}
+          />
+          <Icon name="arrow" />
+        </a>
+      </li>
+    ))}
+</ul>

@@ -1,10 +1,12 @@
 import { initializePreferences } from './preferences';
 import { initializeMetrics } from './metrics';
 import { initializeAuditDialog } from './dialog';
+import { initializeNavigation } from './navigation';
 
 initializePreferences();
 initializeMetrics();
 initializeAuditDialog();
+initializeNavigation();
 
 // Older browsers need a script fallback to print closed native disclosures.
 const openedForPrint = new Set<HTMLDetailsElement>();

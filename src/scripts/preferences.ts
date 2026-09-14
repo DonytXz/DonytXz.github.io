@@ -27,7 +27,15 @@ export function initializePreferences() {
       themeButton.setAttribute('aria-label', label);
       themeButton.title = label;
       themeButton.setAttribute('aria-pressed', String(dark));
-      themeButton.textContent = dark ? '[ ☀ Light ]' : '[ ◐ Dark ]';
+      const themeLabel = themeButton.querySelector('#theme-label');
+      if (themeLabel)
+        themeLabel.textContent = dark
+          ? spanish
+            ? 'Claro'
+            : 'Light'
+          : spanish
+            ? 'Oscuro'
+            : 'Dark';
     }
     if (languageButton) {
       const label = spanish
@@ -73,8 +81,7 @@ export function initializePreferences() {
   });
   themeButton?.addEventListener('click', () => {
     const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    if (nextTheme === 'dark') root.dataset.theme = 'dark';
-    else delete root.dataset.theme;
+    root.dataset.theme = nextTheme;
     persist('theme', nextTheme);
     updateLabels();
   });

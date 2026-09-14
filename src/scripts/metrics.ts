@@ -1,4 +1,20 @@
 export function initializeMetrics() {
+  const widget = document.querySelector('.system-specs');
+  const sidebar = document.querySelector('.header-bottom');
+  const footer = document.querySelector('.site-footer');
+  if (widget && sidebar && footer) {
+    // Match the CSS rail breakpoint. Move the single instance so its measurements,
+    // report listeners, and accessible reading order survive viewport changes.
+    // Static HTML already places it before the footer for mobile and no-JS use.
+    const desktop = window.matchMedia('(min-width: 64rem)');
+    const placeWidget = () => {
+      if (desktop.matches) sidebar.append(widget);
+      else footer.before(widget);
+    };
+    placeWidget();
+    desktop.addEventListener('change', placeWidget);
+  }
+
   function measureInitialPage() {
     const navigation = performance.getEntriesByType('navigation')[0] as
       PerformanceNavigationTiming | undefined;
@@ -30,12 +46,6 @@ export function initializeMetrics() {
     const requests = document.querySelector('#request-count');
     if (requests)
       requests.textContent = `${resources.length + 1} (${external} ext)`;
-    const symbol = document.querySelector('#ext-requests-symbol');
-    if (symbol) symbol.textContent = external === 0 ? '✓' : '×';
-    const en = document.querySelector('#ext-requests-note [data-lang="en"]');
-    const es = document.querySelector('#ext-requests-note [data-lang="es"]');
-    if (en) en.textContent = `${external} external requests`;
-    if (es) es.textContent = `${external} solicitudes externas`;
   }
 
   // Snapshot initial load once; opening the optional report must not inflate page metrics.

@@ -2,13 +2,12 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import SystemSpecs from '../components/SystemSpecs.astro';
 import AuditDialog from '../components/AuditDialog.astro';
 import LocalizedText from '../components/LocalizedText.astro';
 import About from '../components/sections/About.astro';
 import Experience from '../components/sections/Experience.astro';
-import Projects from '../components/sections/Projects.astro';
-import Skills from '../components/sections/Skills.astro';
-import Education from '../components/sections/Education.astro';
+// import Projects from '../components/sections/Projects.astro';
 import Contact from '../components/sections/Contact.astro';
 ---
 
@@ -18,21 +17,19 @@ import Contact from '../components/sections/Contact.astro';
       text={{ en: 'Skip to main content', es: 'Saltar al contenido principal' }}
     />
   </a>
-  <SiteHeader />
-  <main id="main" class="content" tabindex="-1">
-    <About />
-    <hr />
-    <Experience />
-    <hr />
-    <Projects />
-    <hr />
-    <Skills />
-    <hr />
-    <Education />
-    <hr />
-    <Contact />
-  </main>
-  <SiteFooter />
+  <div class="portfolio-shell">
+    <SiteHeader />
+    <div class="reading-column">
+      <main id="main" class="content" tabindex="-1">
+        <About />
+        <Experience />
+        {/* <Projects /> */}
+        <Contact />
+      </main>
+      <SystemSpecs />
+      <SiteFooter />
+    </div>
+  </div>
   <AuditDialog />
 </BaseLayout>
 <script>
