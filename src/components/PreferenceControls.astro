@@ -1,5 +1,7 @@
 ---
 import Flag from './Flag.astro';
+import Icon from './Icon.astro';
+import LocalizedText from './LocalizedText.astro';
 ---
 
 <div class="nav-controls">
@@ -11,14 +13,12 @@ import Flag from './Flag.astro';
     title="Switch language (EN / ES)"
   >
     <span data-lang="en" class="lang-btn-content">
-      [&nbsp;
       <Flag country="MX" />
-      ES&nbsp;]
+      ES
     </span>
     <span data-lang="es" class="lang-btn-content">
-      [&nbsp;
       <Flag country="US" />
-      EN&nbsp;]
+      EN
     </span>
   </button>
   <button
@@ -29,6 +29,10 @@ import Flag from './Flag.astro';
     aria-pressed="false"
     title="Toggle dark / light mode"
   >
-    [ ◐ Dark ]
+    <Icon name="moon" class="theme-moon" />
+    <Icon name="sun" class="theme-sun" />
+    <span id="theme-label">
+      <LocalizedText text={{ en: 'Dark', es: 'Oscuro' }} />
+    </span>
   </button>
 </div>

@@ -1,18 +1,28 @@
 # Donato Alvarez — Astro Portfolio
 
-A bilingual, text-first software engineering portfolio built with Astro and strict TypeScript. Astro produces static HTML, optimized CSS, and a small browser script for preferences, performance metrics, printing, and the audit dialog.
+A bilingual, text-first software engineering portfolio built with Astro and strict TypeScript. Astro produces static HTML, optimized CSS, and a small browser script for preferences, active-section navigation, performance metrics, printing, and the audit dialog.
+
+## Design
+
+The design takes inspiration from [Brittany Chiang](https://brittanychiang.com/) and [Samir Hassen's adaptation](https://github.com/shassen14/portfolio_website). Native Astro components and CSS implement a sticky desktop identity/navigation rail, a single-column mobile layout, navy/teal dark mode, and an off-white/teal light mode.
+
+Theme and language controls share one responsive instance. The sidebar includes LinkedIn and GitHub; email is available in Contact. Compact measured performance metrics (“Under the hood” / “Tras bambalinas”) appear in the desktop sidebar and immediately before the footer on mobile. A single widget moves at the layout breakpoint; without JavaScript it stays before the footer. Heading-based navigation handles long sections, language changes, and expanded career history, while real hash links work without JavaScript. Short screens use a natural-flow header; reduced-motion preferences disable transitions and smooth scrolling.
+
+See [DESIGN.md](./DESIGN.md) for reference evidence, tokens, component rules, and content constraints.
+
+The page currently publishes **About, Experience, and Contact**. Projects is temporarily commented out in `src/pages/index.astro`; Skills and Education are removed from the page and navigation. Light mode is the default even when the operating system prefers dark mode. Explicitly saved theme choices are restored on subsequent visits.
 
 ## Migration baseline
 
-This baseline preserves the structure and CV content of [donatoalvarez.dev](https://donatoalvarez.dev/) at original revision `012e171df759f1d7649836577bfd4f2b3835218e`:
+The redesign retains the CV content contract established by the Astro migration from original revision `012e171df759f1d7649836577bfd4f2b3835218e`:
 
-- About, Experience, Projects, Skills, Education, and Contact anchors.
+- Published About, Experience, and Contact anchors and their original bilingual copy.
 - Three featured roles and five additional roles in a native disclosure.
 - English/Spanish switching, light/dark themes, and persisted preferences.
-- Original system fonts, design tokens, responsive layout, and CV printing.
+- System fonts, the CSS custom-property model, and complete bilingual CV printing.
 - Initial-load performance metrics and an on-demand Lighthouse report.
 
-The About text, self-referential project, metadata, and footer describe the Astro implementation. The original vanilla site is preserved on [`archive/vanilla-portfolio-2026`](https://github.com/DonytXz/DonytXz.github.io/tree/archive/vanilla-portfolio-2026) at the original revision above. The earlier CRA portfolio remains on `archive/cra-portfolio-2021`. Content is separate from presentation to support the next redesign phase.
+The About text, self-referential project, metadata, and footer describe the Astro implementation. The original vanilla site is preserved on [`archive/vanilla-portfolio-2026`](https://github.com/DonytXz/DonytXz.github.io/tree/archive/vanilla-portfolio-2026) at the original revision above. The earlier CRA portfolio remains on `archive/cra-portfolio-2021`. Authored content stays separate from the redesigned presentation in `src/data/`.
 
 ## Local development
 
@@ -51,7 +61,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-The browser suite checks original CV content, desktop/mobile language/theme combinations, persistence, blocked storage, no-JavaScript behavior, keyboard navigation, disclosures, printing, lazy report loading, and local production assets. Screenshots and PDFs are saved to ignored `test-results/`; the browser report is in `playwright-report/`.
+The browser suite checks original CV content and destinations, desktop/mobile language/theme combinations, narrow/tablet/short-screen layouts, active navigation and hash history, persistence, blocked storage, no-JavaScript behavior, keyboard navigation, disclosures, bilingual printing, reduced motion, lazy report loading, and local production assets. Screenshots and PDFs are saved to ignored `test-results/`; the browser report is in `playwright-report/`.
 
 The migration-content test reads the immutable original commit with `git show`. CI fetches full history for this reason. If intentionally updating CV content later, update that test's baseline alongside the content change.
 
@@ -129,10 +139,11 @@ The page-weight widget reports decoded response-body bytes for the initial docum
 src/pages/index.astro          Single portfolio route
 src/layouts/BaseLayout.astro   Metadata, document shell, preference initialization
 src/components/               Header, footer, controls, reusable markup
-src/components/sections/      The six portfolio sections
+src/components/sections/      Section components; three currently published
 src/data/                     Typed bilingual content and audit metadata
 src/scripts/                  Small browser behavior modules
-src/styles/global.css         Original design tokens, layout, print, accessibility
+src/styles/global.css         Theme tokens, responsive layout, print, accessibility
+DESIGN.md                     Approved visual direction and reference evidence
 public/                       Domain, favicon, generated audit reports
 scripts/                      Config/MCP verification and Lighthouse runner
 tests/                        Production browser checks
