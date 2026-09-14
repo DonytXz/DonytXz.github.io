@@ -133,6 +133,16 @@ The report is explicitly labeled as a **production-preview audit**, with its aud
 
 The page-weight widget reports decoded response-body bytes for the initial document and resources, not compressed transfer sizes. It shows `—` if timing data is unavailable. Opening the optional report does not change the initial-load snapshot.
 
+## Security and availability
+
+Astro generates a hash-based Content Security Policy for the portfolio. `npm run build` also applies a separate CSP to the Lighthouse report in `dist/`; both documents retain their normal browser interactions. Direct GitHub Action references are SHA-pinned, and Dependabot proposes weekly npm and Action updates.
+
+```sh
+npm run check:site
+```
+
+This lightweight production probe checks homepage content, canonical redirects, and TLS validity/expiry. The read-only availability workflow runs it twice an hour after release to `main`. An external uptime service and account-level security settings require owner setup; GitHub Actions monitoring alone is not independent of the host. With Cloudflare DNS-only, Cloudflare's HTTP DDoS/WAF/bot controls do not apply.
+
 ## Structure
 
 ```text
