@@ -310,7 +310,7 @@ test('Spanish layouts fit narrow, tablet, and short desktop screens', async ({
   await page.goto('/');
   await page.locator('#lang-toggle').click();
   await page.locator('#theme-toggle').click();
-  await expect(page.locator('.social-links a')).toHaveCount(2);
+  await expect(page.locator('.social-links a:visible')).toHaveCount(3);
   await expect(page.locator('.social-links a[href^="mailto:"]')).toHaveCount(0);
   await expect(page.locator('#contact a[href^="mailto:"]')).toHaveCount(1);
   await expect(page.locator('.system-specs strong')).toHaveText(
@@ -410,4 +410,52 @@ test('production assets are local, error-free, and MCP is dev-only', async ({
   expect((await request.get('/__mcp/sse')).status()).toBe(404);
   expect((await request.get('/CNAME')).status()).toBe(200);
   expect((await request.get('/favicon.svg')).status()).toBe(200);
+});
+
+test('social links include LinkedIn, GitHub, and language-aligned CV', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await expect(page.locator('.social-links a:visible')).toHaveCount(3);
+  await expect(
+    page
+      .locator('.social-links a:visible')
+      .evaluateAll((links) =>
+        links.map((l) => (l as HTMLElement).innerText.trim()),
+      ),
+  ).resolves.toEqual(['LinkedIn', 'CV', 'GitHub']);
+  const cvEn = page.locator('.social-links [data-lang="en"] a');
+  const cvEs = page.locator('.social-links [data-lang="es"] a');
+  await expect(cvEn).toBeVisible();
+  await expect(cvEs).not.toBeVisible();
+  await expect(cvEn).toHaveAttribute(
+    'href',
+    'https://drive.google.com/file/d/1SRp4-2t0IhTNaXhjRZsta13z31zSUGr_/view?usp=sharing',
+  );
+  await expect(cvEn).toHaveAttribute('target', '_blank');
+  await expect(cvEn).toHaveAttribute('rel', 'noopener noreferrer');
+
+  // Switch to Spanish
+  await page.locator('#lang-toggle').click();
+  await expect(page.locator('.social-links a:visible')).toHaveCount(3);
+  await expect(
+    page
+      .locator('.social-links a:visible')
+      .evaluateAll((links) =>
+        links.map((l) => (l as HTMLElement).innerText.trim()),
+      ),
+  ).resolves.toEqual(['LinkedIn', 'CV', 'GitHub']);
+  await expect(cvEn).not.toBeVisible();
+  await expect(cvEs).toBeVisible();
+  await expect(cvEs).toHaveAttribute(
+    'href',
+    'https://drive.google.com/file/d/19RqPzVqYeVGDIDOHLwEoAZ-DIE1VL3wd/view?usp=sharing',
+  );
+  await expect(cvEs).toHaveAttribute('target', '_blank');
+  await expect(cvEs).toHaveAttribute('rel', 'noopener noreferrer');
+
+  // Switch back to English
+  await page.locator('#lang-toggle').click();
+  await expect(cvEn).toBeVisible();
+  await expect(cvEs).not.toBeVisible();
 });

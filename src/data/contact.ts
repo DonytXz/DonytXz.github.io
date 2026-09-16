@@ -33,3 +33,28 @@ export const contacts: {
     text: 'Zapopan / Guadalajara, Jalisco, México',
   },
 ];
+
+export interface SocialLink {
+  label: Localized;
+  href: Localized<string> | string;
+}
+
+export const cvUrls: Localized = {
+  en: 'https://drive.google.com/file/d/1SRp4-2t0IhTNaXhjRZsta13z31zSUGr_/view?usp=sharing',
+  es: 'https://drive.google.com/file/d/19RqPzVqYeVGDIDOHLwEoAZ-DIE1VL3wd/view?usp=sharing',
+};
+
+export const socialLinks: SocialLink[] = [
+  {
+    label: { en: 'LinkedIn', es: 'LinkedIn' },
+    href: 'https://www.linkedin.com/in/donatoalvarezdev',
+  },
+  {
+    label: { en: 'CV', es: 'CV' },
+    href: cvUrls,
+  },
+  {
+    label: { en: 'GitHub', es: 'GitHub' },
+    href: 'https://github.com/DonytXz',
+  },
+];
