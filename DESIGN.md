@@ -41,8 +41,7 @@ Dark background, heading, body, and teal values were confirmed in the primary re
 ## Components and page patterns
 
 - Identity: existing name and bilingual subtitle; one responsive set of preference controls.
-- Navigation: three real hash links (About, Experience, Contact) with decorative line indicators and an enhanced current-section state.
-- Social links: derive LinkedIn and GitHub destinations and labels from `src/data/contact.ts`; email remains in Contact.
+- Social links: derive LinkedIn, GitHub, and bilingual CV destinations and labels from `src/data/contact.ts`; email remains in Contact.
 - Metrics: “Under the hood” / “Tras bambalinas”, a compact desktop sidebar aside and a mobile block immediately before the footer. Move a single instance at the 1024px rail breakpoint; static/no-JS HTML places it before the footer. Retain actual measurements and dated report access.
 - Experience: exact role/company/metadata/bullet text, three featured roles, five behind native `details`.
 - Projects: import and render temporarily commented out in `src/pages/index.astro`; excluded from navigation. Existing component and content remain available for restoration.

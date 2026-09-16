@@ -1,27 +1,28 @@
 ---
-import { contacts } from '../data/contact';
+import { socialLinks } from '../data/contact';
+import { languages } from '../data/portfolio';
 import Icon from './Icon.astro';
 import LocalizedText from './LocalizedText.astro';
 ---
 
 <ul class="social-links">
-  {contacts
-    .filter((contact) => contact.href && contact.external)
-    .map((contact) => (
+  {socialLinks.map((link) =>
+    typeof link.href === 'string' ? (
       <li>
-        <a
-          href={contact.href}
-          target={contact.external ? '_blank' : undefined}
-          rel={contact.external ? 'noopener noreferrer' : undefined}
-        >
-          <LocalizedText
-            text={{
-              en: contact.label.en.replace(/:$/, ''),
-              es: contact.label.es.replace(/:$/, ''),
-            }}
-          />
+        <a href={link.href} target="_blank" rel="noopener noreferrer">
+          <LocalizedText text={link.label} />
           <Icon name="arrow" />
         </a>
       </li>
-    ))}
+    ) : (
+      languages.map((lang) => (
+        <li data-lang={lang} lang={lang}>
+          <a href={link.href[lang]} target="_blank" rel="noopener noreferrer">
+            <span>{link.label[lang]}</span>
+            <Icon name="arrow" />
+          </a>
+        </li>
+      ))
+    ),
+  )}
 </ul>
