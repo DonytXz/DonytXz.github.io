@@ -29,7 +29,7 @@
     "@playwright/test": "^1.63.0",
     "ajv": "^8.20.0",
     "astro-mcp": "0.4.2",
-    "lighthouse": "^13.4.1",
+    "lighthouse": "^13.5.0",
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^1.0.0",
     "typescript": "^6.0.3"
