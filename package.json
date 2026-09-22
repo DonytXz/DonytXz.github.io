@@ -31,7 +31,7 @@
     "astro-mcp": "0.4.2",
     "lighthouse": "^13.4.1",
     "prettier": "^3.9.6",
-    "prettier-plugin-astro": "^1.0.0",
+    "prettier-plugin-astro": "^1.0.1",
     "typescript": "^6.0.3"
   }
 }
