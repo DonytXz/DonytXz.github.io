@@ -3,6 +3,7 @@ import { profile, languages, sections } from '../data/portfolio';
 import LocalizedText from './LocalizedText.astro';
 import PreferenceControls from './PreferenceControls.astro';
 import SocialLinks from './SocialLinks.astro';
+import Badges from './Badges.astro';
 
 // Match the published sections in index.astro; Skills and Education stay hidden.
 const navigationSections = sections.filter(
@@ -35,6 +36,7 @@ const navigationSections = sections.filter(
         </a>
       ))}
     </nav>
+    <Badges />
     <div class="header-bottom">
       <SocialLinks />
     </div>

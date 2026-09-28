@@ -34,7 +34,7 @@ test('CSP permits the portfolio and its interactive Lighthouse report without vi
   );
 });
 
-for (const path of ['/', '/lighthouse-report.report.html']) {
+for (const path of ['/', '/proyects', '/lighthouse-report.report.html']) {
   test(`${path}: CSP blocks injected inline scripts, handlers, external connections, and base URLs`, async ({
     page,
   }) => {

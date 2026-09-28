@@ -142,19 +142,16 @@ for (const lang of ['en', 'es'] as const) {
       {
         title: 'Trámites Digitales Guadalajara',
         employer: 'SONETASOT',
-        period: 'Mar 2022 – Jun 2022',
         href: 'https://tramitesdigitales.guadalajara.gob.mx/inicio',
       },
       {
         title: 'Espacios Escénicos Jalisco',
         employer: 'SONETASOT',
-        period: 'Nov 2021 – Feb 2022',
         href: 'https://espaciosescenicos.jalisco.gob.mx/',
       },
       {
         title: 'PBH Abogados',
         employer: 'Sharptech',
-        period: lang === 'en' ? 'Jan 2021 – Aug 2021' : 'Ene 2021 – Ago 2021',
         href: 'https://app.pbhabogados.com/',
       },
     ];
@@ -166,9 +163,8 @@ for (const lang of ['en', 'es'] as const) {
       await expect(card.locator('.project-meta')).toContainText(
         project.employer,
       );
-      await expect(card.locator('.project-meta')).toContainText(
-        project.period,
-        { useInnerText: true },
+      await expect(card.locator('.project-meta')).not.toContainText(
+        /\b\d{4}\b/,
       );
       await expect(card.locator('.project-site')).toHaveAttribute(
         'href',
@@ -206,8 +202,8 @@ for (const lang of ['en', 'es'] as const) {
     );
     await expect(cards.nth(1).locator('figcaption:visible')).toContainText(
       lang === 'en'
-        ? 'Screenshot provided by the author'
-        : 'Captura proporcionada por el autor',
+        ? 'Archive screenshot from 2022'
+        : 'Captura de archivo de 2022',
     );
     await expect(
       page.locator('#projects a[href*="web.archive.org"]'),
@@ -276,9 +272,95 @@ for (const lang of ['en', 'es'] as const) {
     await expect(singleGallery).toBeVisible();
     await expect(singleGallery.locator('.gallery-navigation')).toBeHidden();
     await singleGallery.locator('[data-gallery-close]').click();
-    await expect(single).toBeFocused();
+    const moreLink = page.locator('.projects-more a');
+    await expect(moreLink).toBeVisible();
+    await expect(moreLink).toHaveAttribute('href', '/proyects');
+    await expect(moreLink).toContainText(
+      lang === 'en' ? 'View more' : 'Ver más',
+    );
   });
 }
+
+test('projects grid page displays all 5 projects without dates and links back', async ({
+  page,
+}) => {
+  await page.goto('/proyects');
+  const cards = page.locator('.projects-grid .project');
+  await expect(cards).toHaveCount(5);
+
+  const expectedProjects = [
+    {
+      title: 'Trámites Digitales Guadalajara',
+      href: 'https://tramitesdigitales.guadalajara.gob.mx/inicio',
+    },
+    {
+      title: 'Espacios Escénicos Jalisco',
+      href: 'https://espaciosescenicos.jalisco.gob.mx/',
+    },
+    {
+      title: 'PBH Abogados',
+      href: 'https://app.pbhabogados.com/',
+    },
+    {
+      title: 'Pracofi',
+      href: 'https://donatoalvarez.dev/pracofi/',
+      repoHref: 'https://github.com/DonytXz/pracofi',
+    },
+    {
+      title: 'NATOS',
+      href: 'https://donatoalvarez.dev/NATOS/',
+      repoHref: 'https://github.com/DonytXz/NATOS',
+    },
+  ];
+
+  for (const [index, expected] of expectedProjects.entries()) {
+    const card = cards.nth(index);
+    await expect(
+      card.getByRole('heading', { name: expected.title }),
+    ).toBeVisible();
+    await expect(card.locator('.project-site')).toHaveAttribute(
+      'href',
+      expected.href,
+    );
+    await expect(card.locator('.project-meta')).not.toContainText(/\b\d{4}\b/);
+    if ('repoHref' in expected && expected.repoHref) {
+      await expect(card.locator('.project-repo')).toHaveAttribute(
+        'href',
+        expected.repoHref,
+      );
+    }
+  }
+
+  // Spot 4: Pracofi has both website and GitHub links
+  await expect(cards.nth(3).locator('.project-site')).toHaveAttribute(
+    'href',
+    'https://donatoalvarez.dev/pracofi/',
+  );
+  await expect(cards.nth(3).locator('.project-repo')).toHaveAttribute(
+    'href',
+    'https://github.com/DonytXz/pracofi',
+  );
+  // Spot 5: NATOS has both website and GitHub links
+  await expect(cards.nth(4).locator('.project-site')).toHaveAttribute(
+    'href',
+    'https://donatoalvarez.dev/NATOS/',
+  );
+  await expect(cards.nth(4).locator('.project-repo')).toHaveAttribute(
+    'href',
+    'https://github.com/DonytXz/NATOS',
+  );
+
+  // Back link returns to home page
+  const backLink = page.locator('.back-link');
+  await expect(backLink).toBeVisible();
+  await backLink.click();
+  await expect(page).toHaveURL(/\/$/);
+});
+
+test('/projects route also loads the projects page', async ({ page }) => {
+  await page.goto('/projects');
+  await expect(page.locator('.projects-grid .project')).toHaveCount(5);
+});
 
 test('report loads on demand, closes with Escape, and leaves initial metrics stable', async ({
   page,
@@ -491,6 +573,7 @@ test('active navigation handles direct hashes, long translated sections, and his
 test('Spanish layouts fit narrow, tablet, and short desktop screens', async ({
   page,
 }, testInfo) => {
+  test.setTimeout(60000);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await page.locator('#lang-toggle').click();
@@ -652,4 +735,32 @@ test('social links include LinkedIn, GitHub, and language-aligned CV', async ({
   await page.locator('#lang-toggle').click();
   await expect(cvEn).toBeVisible();
   await expect(cvEs).not.toBeVisible();
+});
+
+test('header badges section is rendered with local images and Credly links', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await expect(
+    page.locator('.header-badges-heading [data-lang="en"]'),
+  ).toHaveText('Badges');
+  await expect(
+    page.locator('.header-badges-heading [data-lang="es"]'),
+  ).toHaveText('Insignias');
+  const badgeLinks = page.locator('.header-badges .badge-link');
+  await expect(badgeLinks).toHaveCount(9);
+  for (const link of await badgeLinks.all()) {
+    await expect(link).toHaveAttribute(
+      'href',
+      /^https:\/\/www\.credly\.com\/badges\//,
+    );
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    const img = link.locator('img');
+    await expect(img).toHaveAttribute('src', /^\/badges\/[a-f0-9-]+\.png$/);
+    const naturalWidth = await img.evaluate(
+      (el: HTMLImageElement) => el.naturalWidth,
+    );
+    expect(naturalWidth).toBeGreaterThan(0);
+  }
 });

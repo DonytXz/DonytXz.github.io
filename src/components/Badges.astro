@@ -1,0 +1,33 @@
+---
+import { badges } from '../data/badges';
+import LocalizedText from './LocalizedText.astro';
+---
+
+<section class="header-badges" aria-label="Badges">
+  <h2 class="header-badges-heading">
+    <LocalizedText text={{ en: 'Badges', es: 'Insignias' }} />
+  </h2>
+  <div class="badge-grid" role="list">
+    {badges.map((badge) => (
+      <a
+        href={badge.url}
+        class="badge-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        title={`${badge.title} — ${badge.issuer}`}
+        aria-label={`${badge.title} (${badge.issuer})`}
+        role="listitem"
+      >
+        <img
+          src={badge.image}
+          alt=""
+          width="48"
+          height="48"
+          loading="lazy"
+          decoding="async"
+          class="badge-img"
+        />
+      </a>
+    ))}
+  </div>
+</section>

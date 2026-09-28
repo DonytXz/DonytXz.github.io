@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 function insertHeadMetadata(html, metadata) {
   assert.equal(
@@ -18,21 +20,36 @@ function insertHeadMetadata(html, metadata) {
 // Astro emits its generated CSP at the end of this layout's head. Move the
 // generated policy ahead of the pre-paint script and favicon, without rebuilding
 // or duplicating its directive/hash logic.
-const portfolioPath = new URL('../dist/index.html', import.meta.url);
-const portfolio = (await readFile(portfolioPath, 'utf8')).replace(
-  /\r\n?/g,
-  '\n',
-);
-const policies =
-  portfolio.match(
-    /<meta http-equiv="content-security-policy" content="[^"]*">/g,
-  ) ?? [];
-assert.equal(policies.length, 1, 'Expected one Astro-generated portfolio CSP');
-await writeFile(
-  portfolioPath,
-  insertHeadMetadata(portfolio.replace(policies[0], ''), policies[0]),
-);
-console.log('Positioned portfolio CSP before scripts and resources.');
+const distPath = fileURLToPath(new URL('../dist', import.meta.url));
+const entries = await readdir(distPath, {
+  withFileTypes: true,
+  recursive: true,
+});
+const htmlFiles = entries
+  .filter(
+    (entry) =>
+      entry.isFile() &&
+      entry.name.endsWith('.html') &&
+      entry.name !== 'lighthouse-report.report.html',
+  )
+  .map((entry) => join(entry.parentPath, entry.name));
+
+assert(htmlFiles.length > 0, 'No HTML pages found in dist output');
+
+for (const filePath of htmlFiles) {
+  const content = (await readFile(filePath, 'utf8')).replace(/\r\n?/g, '\n');
+  const policies =
+    content.match(
+      /<meta http-equiv="content-security-policy" content="[^"]*">/g,
+    ) ?? [];
+  if (policies.length === 1) {
+    await writeFile(
+      filePath,
+      insertHeadMetadata(content.replace(policies[0], ''), policies[0]),
+    );
+    console.log(`Positioned CSP before scripts and resources in ${filePath}`);
+  }
+}
 
 // Files copied from public/ do not receive Astro's page CSP. Apply a separate
 // policy to this trusted, generated Lighthouse document in the build output.

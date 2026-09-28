@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import PreferenceControls from '../components/PreferenceControls.astro';
+import LocalizedText from '../components/LocalizedText.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import ProjectGallery from '../components/ProjectGallery.astro';
+import { projects } from '../data/projects';
+import { profile } from '../data/portfolio';
+
+const pageTitle = `Projects — ${profile.name}`;
+const pageDesc =
+  'A collection of production platforms, digital services, and open-source projects by Donato Alvarez.';
+---
+
+<BaseLayout title={pageTitle} description={pageDesc}>
+  <a href="#main" class="skip-link">
+    <LocalizedText
+      text={{ en: 'Skip to main content', es: 'Saltar al contenido principal' }}
+    />
+  </a>
+  <div class="projects-page-shell">
+    <header class="projects-page-header">
+      <nav class="projects-page-nav" aria-label="Page navigation">
+        <a href="/" class="back-link">
+          <span aria-hidden="true">← </span>
+          <LocalizedText
+            text={{
+              en: 'Back to portfolio',
+              es: 'Volver al portafolio',
+            }}
+          />
+        </a>
+        <PreferenceControls />
+      </nav>
+      <div class="projects-page-title-block">
+        <h1 class="projects-page-title">
+          <LocalizedText
+            text={{ en: 'All Projects', es: 'Todos los Proyectos' }}
+          />
+        </h1>
+        <p class="projects-page-desc">
+          <LocalizedText
+            text={{
+              en: 'A selection of production systems, digital services, and open-source applications.',
+              es: 'Una selección de sistemas en producción, trámites digitales y aplicaciones de código abierto.',
+            }}
+          />
+        </p>
+      </div>
+    </header>
+    <main id="main" class="content" tabindex="-1">
+      <div class="projects-grid">
+        {projects.map((project) => (
+          <ProjectCard project={project} />
+        ))}
+      </div>
+    </main>
+    <SiteFooter />
+  </div>
+  <ProjectGallery />
+</BaseLayout>
+<script>
+  import { initializePreferences } from '../scripts/preferences';
+  import { initializeProjectGallery } from '../scripts/project-gallery';
+
+  initializePreferences();
+  initializeProjectGallery();
+</script>
