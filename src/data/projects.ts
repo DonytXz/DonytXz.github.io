@@ -3,23 +3,25 @@ import tramitesImage from '../assets/projects/tramites-digitales.png';
 import tramitesHistoricalImage from '../assets/projects/tramites-digitales-2022.png';
 import espaciosImage from '../assets/projects/espacios-escenicos.png';
 import pbhImage from '../assets/projects/pbh-abogados.png';
+import pracofiImage from '../assets/projects/pracofi.png';
+import natosImage from '../assets/projects/natos.png';
 import type { Localized } from './portfolio';
 
-interface ProjectImage {
+export interface ProjectImage {
   src: ImageMetadata;
   alt: Localized;
   caption: Localized;
 }
 
-interface Project {
+export interface Project {
   id: string;
   title: Localized;
-  client: string;
-  employer: string;
-  period: Localized;
+  client?: string;
+  employer?: string;
   description: Localized;
   technologies: string;
   href: string;
+  repoHref?: string;
   images: [ProjectImage, ...ProjectImage[]];
 }
 
@@ -28,7 +30,6 @@ const currentSiteCaption: Localized = {
   es: 'Sitio público actual · Septiembre de 2026',
 };
 
-// Contribution dates were supplied by the author from his LinkedIn projects.
 // Screenshot provenance is recorded in src/assets/projects/README.md.
 export const projects: Project[] = [
   {
@@ -39,7 +40,6 @@ export const projects: Project[] = [
     },
     client: 'Gobierno de Guadalajara',
     employer: 'SONETASOT',
-    period: { en: 'Mar 2022 – Jun 2022', es: 'Mar 2022 – Jun 2022' },
     description: {
       en: 'Contributed to Guadalajara’s digital services platform, building Angular interfaces, forms, and REST API integrations to help residents explore requirements and manage municipal procedures online.',
       es: 'Contribuí a la plataforma de trámites digitales de Guadalajara, desarrollando interfaces en Angular, formularios e integraciones con APIs REST para consultar requisitos y gestionar trámites municipales en línea.',
@@ -76,7 +76,6 @@ export const projects: Project[] = [
     },
     client: 'Secretaría de Cultura de Jalisco',
     employer: 'SONETASOT',
-    period: { en: 'Nov 2021 – Feb 2022', es: 'Nov 2021 – Feb 2022' },
     description: {
       en: 'Contributed to a cultural events platform for Jalisco’s Secretaría de Cultura, developing the React frontend and Node.js backend for discovering performances and performing arts venues.',
       es: 'Contribuí a una plataforma de eventos culturales de la Secretaría de Cultura de Jalisco, desarrollando el frontend en React y el backend en Node.js para descubrir espectáculos y espacios escénicos.',
@@ -91,8 +90,8 @@ export const projects: Project[] = [
           es: 'Cartelera de Espacios Escénicos con tarjetas de obras de teatro y conciertos de orquesta.',
         },
         caption: {
-          en: 'Cultural events listing · Screenshot provided by the author',
-          es: 'Cartelera cultural · Captura proporcionada por el autor',
+          en: 'Archive screenshot from 2022',
+          es: 'Captura de archivo de 2022',
         },
       },
     ],
@@ -102,7 +101,6 @@ export const projects: Project[] = [
     title: { en: 'PBH Abogados', es: 'PBH Abogados' },
     client: 'PBH Abogados',
     employer: 'Sharptech',
-    period: { en: 'Jan 2021 – Aug 2021', es: 'Ene 2021 – Ago 2021' },
     description: {
       en: 'Led the React frontend for PBH Abogados’ legal services platform, delivering a responsive experience and integrating Stripe payments and Nodemailer email workflows.',
       es: 'Lideré el desarrollo frontend en React de la plataforma de servicios legales de PBH Abogados, creando una experiencia adaptable e integrando pagos con Stripe y flujos de correo con Nodemailer.',
@@ -117,6 +115,58 @@ export const projects: Project[] = [
           es: 'Inicio de PBH Abogados con presentación de servicios legales, acceso de usuarios y enlace para agendar una cita.',
         },
         caption: currentSiteCaption,
+      },
+    ],
+  },
+  {
+    id: 'pracofi',
+    title: { en: 'Pracofi', es: 'Pracofi' },
+    client: 'Pracofi',
+    employer: 'Open Source',
+    description: {
+      en: 'Web application for accounting and tax advisory management, featuring appointment booking, client administration, PDF report generation with jsPDF, and Formspree integration.',
+      es: 'Aplicación web para gestión contable y asesoría fiscal, con agendamiento de citas, administración de clientes, generación de reportes en PDF con jsPDF e integración con Formspree.',
+    },
+    technologies: 'React · Vite · Tailwind CSS · jsPDF · Axios · Vitest',
+    href: 'https://donatoalvarez.dev/pracofi/',
+    repoHref: 'https://github.com/DonytXz/pracofi',
+    images: [
+      {
+        src: pracofiImage,
+        alt: {
+          en: 'Pracofi accounting services homepage and booking dashboard overview.',
+          es: 'Inicio de la plataforma contable Pracofi y vista general de gestión de citas.',
+        },
+        caption: {
+          en: 'Accounting and tax advisory web application · Public interface',
+          es: 'Aplicación web de gestión contable y asesoría fiscal · Interfaz pública',
+        },
+      },
+    ],
+  },
+  {
+    id: 'natos',
+    title: { en: 'NATOS', es: 'NATOS' },
+    client: 'NATOS',
+    employer: 'Open Source',
+    description: {
+      en: 'Commercial lumber and pallet inventory and sales web application, migrated to modern Angular 22 and TypeScript. Includes product catalog, shopping cart, supplier management, and customer administration.',
+      es: 'Aplicación web comercial y de inventario para tarimas y madera, migrada a Angular 22 y TypeScript moderno. Incluye catálogo de productos, carrito de compras, gestión de proveedores y administración de clientes.',
+    },
+    technologies: 'Angular · TypeScript · RxJS · Materialize · Bootstrap',
+    href: 'https://donatoalvarez.dev/NATOS/',
+    repoHref: 'https://github.com/DonytXz/NATOS',
+    images: [
+      {
+        src: natosImage,
+        alt: {
+          en: 'NATOS commercial platform homepage with lumber and pallet catalog.',
+          es: 'Inicio de la plataforma comercial NATOS con catálogo de tarimas y madera.',
+        },
+        caption: {
+          en: 'Commercial inventory and commerce platform · Public interface',
+          es: 'Plataforma comercial y de inventario · Interfaz pública',
+        },
       },
     ],
   },
