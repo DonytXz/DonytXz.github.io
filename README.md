@@ -1,6 +1,6 @@
 # Donato Alvarez — Astro Portfolio
 
-A bilingual, text-first software engineering portfolio built with Astro and strict TypeScript. Astro produces static HTML, optimized CSS, and a small browser script for preferences, active-section navigation, performance metrics, printing, and the audit dialog.
+A bilingual, text-first software engineering portfolio built with Astro and strict TypeScript. Astro produces static HTML, optimized CSS, and a small browser script for preferences, active-section navigation, performance metrics, printing, image galleries, and the audit dialog.
 
 ## Design
 
@@ -10,7 +10,7 @@ Theme and language controls share one responsive instance. The sidebar includes 
 
 See [DESIGN.md](./DESIGN.md) for reference evidence, tokens, component rules, and content constraints.
 
-The page currently publishes **About, Experience, and Contact**. Projects is temporarily commented out in `src/pages/index.astro`; Skills and Education are removed from the page and navigation. Light mode is the default even when the operating system prefers dark mode. Explicitly saved theme choices are restored on subsequent visits.
+The page currently publishes **About, Experience, Projects, and Contact**. Projects features three bilingual client-work cards with contribution dates, employer credits, technology lists, local screenshots with an accessible image gallery, and live links. Screenshot provenance are documented in [src/assets/projects/README.md](./src/assets/projects/README.md). Skills and Education are removed from the page and navigation. Light mode is the default even when the operating system prefers dark mode. Explicitly saved theme choices are restored on subsequent visits.
 
 ## Migration baseline
 
@@ -22,7 +22,7 @@ The redesign retains the CV content contract established by the Astro migration 
 - System fonts, the CSS custom-property model, and complete bilingual CV printing.
 - Initial-load performance metrics and an on-demand Lighthouse report.
 
-The About text, self-referential project, metadata, and footer describe the Astro implementation. The original vanilla site is preserved on [`archive/vanilla-portfolio-2026`](https://github.com/DonytXz/DonytXz.github.io/tree/archive/vanilla-portfolio-2026) at the original revision above. The earlier CRA portfolio remains on `archive/cra-portfolio-2021`. Authored content stays separate from the redesigned presentation in `src/data/`.
+The About text, metadata, and footer describe the Astro implementation. The original vanilla site is preserved on [`archive/vanilla-portfolio-2026`](https://github.com/DonytXz/DonytXz.github.io/tree/archive/vanilla-portfolio-2026) at the original revision above. The earlier CRA portfolio remains on `archive/cra-portfolio-2021`. Authored content stays separate from the redesigned presentation in `src/data/`.
 
 ## Local development
 

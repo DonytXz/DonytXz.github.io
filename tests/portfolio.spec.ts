@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { expect, test } from '@playwright/test';
 
 // The immutable, pre-migration source protects the published CV copy. The user
-// disabled Projects and removed Skills/Education from the page in September 2026.
+// approved new project cards; Skills/Education remain removed from the page.
 const original = execFileSync(
   'git',
   ['show', '012e171df759f1d7649836577bfd4f2b3835218e:index.html'],
@@ -49,11 +49,10 @@ test('preserves the published CV content in both languages', async ({
     await page
       .locator('main > section')
       .evaluateAll((nodes) => nodes.map((node) => node.id)),
-  ).toEqual(['about', 'experience', 'contact']);
+  ).toEqual(['about', 'experience', 'projects', 'contact']);
   await expect(page.locator('.role')).toHaveCount(8);
-  await expect(
-    page.locator('#projects, #skills, #education, .project'),
-  ).toHaveCount(0);
+  await expect(page.locator('#skills, #education')).toHaveCount(0);
+  await expect(page.locator('#projects .project')).toHaveCount(3);
 });
 
 for (const lang of ['en', 'es'] as const) {
@@ -120,6 +119,167 @@ test('keyboard skip link and native career disclosure work', async ({
   await expect(page.locator('.detailed-experience')).not.toBeVisible();
 });
 
+for (const lang of ['en', 'es'] as const) {
+  test(`${lang}: project dates, local screenshots, and destinations work`, async ({
+    page,
+  }, testInfo) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/#projects');
+    await expect(
+      page.locator('.site-nav [aria-current="location"]'),
+    ).toHaveAttribute('href', '#projects');
+    if (lang === 'es') {
+      // The mobile language control is above the section; clicking it scrolls up.
+      await page.locator('#lang-toggle').click();
+      await page.locator('.site-nav a[href="#projects"]').click();
+      await expect(
+        page.locator('.site-nav [aria-current="location"]'),
+      ).toHaveAttribute('href', '#projects');
+    }
+    const cards = page.locator('#projects .project');
+    await expect(cards).toHaveCount(3);
+    const expected = [
+      {
+        title: 'Trámites Digitales Guadalajara',
+        employer: 'SONETASOT',
+        period: 'Mar 2022 – Jun 2022',
+        href: 'https://tramitesdigitales.guadalajara.gob.mx/inicio',
+      },
+      {
+        title: 'Espacios Escénicos Jalisco',
+        employer: 'SONETASOT',
+        period: 'Nov 2021 – Feb 2022',
+        href: 'https://espaciosescenicos.jalisco.gob.mx/',
+      },
+      {
+        title: 'PBH Abogados',
+        employer: 'Sharptech',
+        period: lang === 'en' ? 'Jan 2021 – Aug 2021' : 'Ene 2021 – Ago 2021',
+        href: 'https://app.pbhabogados.com/',
+      },
+    ];
+    for (const [index, project] of expected.entries()) {
+      const card = cards.nth(index);
+      await expect(
+        card.getByRole('heading', { name: project.title }),
+      ).toBeVisible();
+      await expect(card.locator('.project-meta')).toContainText(
+        project.employer,
+      );
+      await expect(card.locator('.project-meta')).toContainText(
+        project.period,
+        { useInnerText: true },
+      );
+      await expect(card.locator('.project-site')).toHaveAttribute(
+        'href',
+        project.href,
+      );
+      const image = card.getByRole('img');
+      await image.scrollIntoViewIfNeeded();
+      await expect(image).toHaveCount(1);
+      await expect(image).toHaveAttribute(
+        'alt',
+        index === 1
+          ? /Espacios Escénicos/
+          : lang === 'en'
+            ? /homepage/
+            : /Inicio/,
+      );
+      await expect(image).toHaveAttribute('loading', 'lazy');
+      await expect(image).toHaveAttribute('srcset', /320w.*640w.*960w/);
+      await expect
+        .poll(() =>
+          image.evaluate((node) => (node as HTMLImageElement).naturalWidth),
+        )
+        .toBeGreaterThan(0);
+      expect(
+        new URL(
+          await image.evaluate((node) => (node as HTMLImageElement).currentSrc),
+        ).origin,
+      ).toBe('http://127.0.0.1:4322');
+      await card.screenshot({
+        path: testInfo.outputPath(`project-${index}.png`),
+      });
+    }
+    await expect(cards.first().locator('.project-tech')).toHaveText(
+      'Angular · PHP · Laravel · PostgreSQL · REST APIs · Jest',
+    );
+    await expect(cards.nth(1).locator('figcaption:visible')).toContainText(
+      lang === 'en'
+        ? 'Screenshot provided by the author'
+        : 'Captura proporcionada por el autor',
+    );
+    await expect(
+      page.locator('#projects a[href*="web.archive.org"]'),
+    ).toHaveCount(0);
+    await expect(cards.nth(1).locator('.project-links a')).toHaveCount(1);
+    await expect(page.locator('.project-screenshot')).toHaveCount(0);
+    const trigger = cards.first().locator('.project-gallery-trigger:visible');
+    await expect(trigger.locator('.project-image-count')).toHaveText(
+      lang === 'en' ? '2 images' : '2 imágenes',
+    );
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    const gallery = page.getByRole('dialog', { name: expected[0].title });
+    await expect(gallery).toBeVisible();
+    await expect(gallery.locator('[data-gallery-close]')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(gallery.locator('[data-gallery-previous]')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(gallery.locator('[data-gallery-next]')).toBeFocused();
+    expect(
+      await gallery.evaluate((node) => {
+        const rect = node.getBoundingClientRect();
+        return (
+          rect.left >= 0 &&
+          rect.right <= innerWidth &&
+          rect.top >= 0 &&
+          rect.bottom <= innerHeight
+        );
+      }),
+    ).toBe(true);
+    const galleryImage = gallery.locator('img');
+    const firstSource = await galleryImage.getAttribute('src');
+    await expect(gallery.locator('#gallery-position')).toHaveText(
+      lang === 'en' ? 'Image 1 of 2' : 'Imagen 1 de 2',
+    );
+    await gallery.locator('[data-gallery-next]').click();
+    await expect(galleryImage).not.toHaveAttribute('src', firstSource!);
+    await expect(gallery.locator('figcaption')).toContainText('2022');
+    await expect(gallery.locator('figcaption')).toContainText(
+      lang === 'en' ? 'undergraduate thesis' : 'tesina',
+    );
+    await expect
+      .poll(() =>
+        galleryImage.evaluate(
+          (node) => (node as HTMLImageElement).naturalWidth,
+        ),
+      )
+      .toBeGreaterThan(0);
+    await expect(gallery.locator('#gallery-position')).toHaveText(
+      lang === 'en' ? 'Image 2 of 2' : 'Imagen 2 de 2',
+    );
+    await gallery.screenshot({ path: testInfo.outputPath('gallery.png') });
+    await page.keyboard.press('ArrowRight');
+    await expect(galleryImage).toHaveAttribute('src', firstSource!);
+    await gallery.locator('[data-gallery-previous]').click();
+    await expect(galleryImage).not.toHaveAttribute('src', firstSource!);
+    await page.keyboard.press('ArrowLeft');
+    await expect(galleryImage).toHaveAttribute('src', firstSource!);
+    await page.keyboard.press('Escape');
+    await expect(gallery).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    const single = cards.nth(2).locator('.project-gallery-trigger:visible');
+    await expect(single.locator('.project-image-count')).toHaveCount(0);
+    await single.click();
+    const singleGallery = page.getByRole('dialog', { name: expected[2].title });
+    await expect(singleGallery).toBeVisible();
+    await expect(singleGallery.locator('.gallery-navigation')).toBeHidden();
+    await singleGallery.locator('[data-gallery-close]').click();
+    await expect(single).toBeFocused();
+  });
+}
+
 test('report loads on demand, closes with Escape, and leaves initial metrics stable', async ({
   page,
 }) => {
@@ -137,17 +297,17 @@ test('report loads on demand, closes with Escape, and leaves initial metrics sta
   );
   await page.locator('#open-audit-btn').click();
   expect((await reportResponse).status()).toBe(200);
-  await expect(page.locator('dialog')).toBeVisible();
+  await expect(page.locator('#lighthouse-dialog')).toBeVisible();
   await expect.poll(() => reports.length).toBe(1);
   await page.locator('#close-audit-btn').focus();
   await page.keyboard.press('Escape');
-  await expect(page.locator('dialog')).not.toBeVisible();
+  await expect(page.locator('#lighthouse-dialog')).not.toBeVisible();
   await expect(page.locator('#open-audit-btn')).toBeFocused();
   await page.locator('#lang-toggle').click();
   await expect(page.locator('#request-count')).toHaveText(initial);
   await page.locator('#open-audit-btn').click();
   await page.locator('#close-audit-btn').click();
-  await expect(page.locator('dialog')).not.toBeVisible();
+  await expect(page.locator('#lighthouse-dialog')).not.toBeVisible();
   expect(reports).toHaveLength(1);
 });
 
@@ -181,6 +341,7 @@ test('core CV and disclosure work without JavaScript', async ({
   const context = await browser.newContext({
     javaScriptEnabled: false,
     colorScheme: 'dark',
+    reducedMotion: 'reduce',
     viewport,
   });
   try {
@@ -205,6 +366,21 @@ test('core CV and disclosure work without JavaScript', async ({
     await expect(page).toHaveURL(/#contact$/);
     await expect(page.locator('#contact-heading')).toBeInViewport();
     await expect(page.locator('.site-nav [aria-current]')).toHaveCount(0);
+    await page.locator('.site-nav a[href="#projects"]').click();
+    await expect(page.locator('#projects-heading')).toBeInViewport();
+    await expect(page.locator('.project-site')).toHaveCount(3);
+    await expect(
+      page.locator('.project').first().locator('img:visible'),
+    ).toBeVisible();
+    await page.locator('.project-gallery-trigger:visible').first().click();
+    await expect(page).toHaveURL(/\.png$/);
+    await expect
+      .poll(() =>
+        page
+          .locator('img')
+          .evaluate((node) => (node as HTMLImageElement).naturalWidth),
+      )
+      .toBeGreaterThan(0);
   } finally {
     await context.close();
   }
@@ -227,6 +403,15 @@ for (const lang of ['en', 'es'] as const) {
     await expect(page.locator('.header-bottom')).not.toBeVisible();
     await expect(page.locator('.system-specs')).not.toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('lang', lang);
+    await expect(page.locator('.project-figure:visible')).toHaveCount(0);
+    await expect(page.locator('.project-gallery:visible')).toHaveCount(0);
+    await expect(page.locator('.project-site:visible')).toHaveCount(3);
+    expect(
+      await page
+        .locator('.project-site')
+        .first()
+        .evaluate((link) => getComputedStyle(link, '::after').content),
+    ).toContain('https://tramitesdigitales.guadalajara.gob.mx/inicio');
     await expect(
       page.locator('.detailed-experience .role').last(),
     ).toBeVisible();
@@ -255,7 +440,7 @@ test('published navigation and contact destinations are preserved', async ({
   await page.goto('/');
   const comparison = await page.evaluate((source) => {
     const old = new DOMParser().parseFromString(source, 'text/html');
-    const publishedAnchors = ['#about', '#experience', '#contact'];
+    const publishedAnchors = ['#about', '#experience', '#projects', '#contact'];
     return ['.site-nav a', '#contact a'].map((selector) => ({
       selector,
       expected: Array.from(old.querySelectorAll(selector), (link) =>
@@ -290,17 +475,17 @@ test('active navigation handles direct hashes, long translated sections, and his
   });
   await expect(active).toHaveAttribute('href', '#experience');
   await page.locator('summary').click();
-  for (const id of ['about', 'experience', 'contact']) {
+  for (const id of ['about', 'experience', 'projects', 'contact']) {
     await page.locator(`.site-nav a[href="#${id}"]`).click();
     await expect(active).toHaveAttribute('href', `#${id}`);
     await expect(active).toHaveCount(1);
     await expect(page.locator(`#${id}-heading`)).toBeInViewport();
   }
   await page.goBack();
-  await expect(page).toHaveURL(/#experience$/);
-  await expect(active).toHaveAttribute('href', '#experience');
+  await expect(page).toHaveURL(/#projects$/);
+  await expect(active).toHaveAttribute('href', '#projects');
   await page.reload();
-  await expect(active).toHaveAttribute('href', '#experience');
+  await expect(active).toHaveAttribute('href', '#projects');
 });
 
 test('Spanish layouts fit narrow, tablet, and short desktop screens', async ({
@@ -377,7 +562,7 @@ test('Spanish layouts fit narrow, tablet, and short desktop screens', async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator('.reading-column > .system-specs')).toHaveCount(1);
   await page.locator('#open-audit-btn').click();
-  await expect(page.locator('dialog')).toBeVisible();
+  await expect(page.locator('#lighthouse-dialog')).toBeVisible();
   await page.locator('#close-audit-btn').click();
   await expect(page.locator('#open-audit-btn')).toBeFocused();
   await expect(page.locator('#request-count')).toHaveText(initialRequests);
@@ -400,6 +585,15 @@ test('production assets are local, error-free, and MCP is dev-only', async ({
   });
   await page.goto('/');
   await expect(page.locator('#request-count')).toHaveText(/\d+ \(0 ext\)/);
+  // Exercise lazy screenshot requests as well as the initial page assets.
+  for (const img of await page.locator('.project img:visible').all()) {
+    await img.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        img.evaluate((node) => (node as HTMLImageElement).naturalWidth),
+      )
+      .toBeGreaterThan(0);
+  }
   await expect(page.locator('#page-size')).toHaveText(/\d+\.\d+KB/);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     'href',

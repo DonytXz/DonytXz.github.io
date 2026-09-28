@@ -4,10 +4,11 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import SystemSpecs from '../components/SystemSpecs.astro';
 import AuditDialog from '../components/AuditDialog.astro';
+import ProjectGallery from '../components/ProjectGallery.astro';
 import LocalizedText from '../components/LocalizedText.astro';
 import About from '../components/sections/About.astro';
 import Experience from '../components/sections/Experience.astro';
-// import Projects from '../components/sections/Projects.astro';
+import Projects from '../components/sections/Projects.astro';
 import Contact from '../components/sections/Contact.astro';
 ---
 
@@ -23,7 +24,7 @@ import Contact from '../components/sections/Contact.astro';
       <main id="main" class="content" tabindex="-1">
         <About />
         <Experience />
-        {/* <Projects /> */}
+        <Projects />
         <Contact />
       </main>
       <SystemSpecs />
@@ -31,6 +32,7 @@ import Contact from '../components/sections/Contact.astro';
     </div>
   </div>
   <AuditDialog />
+  <ProjectGallery />
 </BaseLayout>
 <script>
   import '../scripts/portfolio';
