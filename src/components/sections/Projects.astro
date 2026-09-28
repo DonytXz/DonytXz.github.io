@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { projects } from '../../data/projects';
 import { languages } from '../../data/portfolio';
 import LocalizedText from '../LocalizedText.astro';
@@ -7,29 +8,72 @@ import PortfolioSection from '../PortfolioSection.astro';
 
 <PortfolioSection id="projects">
   {projects.map((project) => (
-    <article class="project">
-      <h3>
-        <a href={project.href}>
-          <LocalizedText text={project.title} />
-        </a>
-        {project.currentSite && (
-          <>
-            {' '}
-            <span class="project-tag" data-lang="en" lang="en">
-              (this site)
-            </span>
-            <span class="project-tag" data-lang="es" lang="es">
-              (este sitio)
-            </span>
-          </>
-        )}
-      </h3>
+    <article class="project" aria-labelledby={`${project.id}-title`}>
       {languages.map((lang) => (
-        <p data-lang={lang} lang={lang}>
-          {project.description[lang]}
-        </p>
+        <figure class="project-figure" data-lang={lang} lang={lang}>
+          <a
+            class="project-gallery-trigger"
+            href={project.images[0].src.src}
+            data-gallery-title={project.title[lang]}
+            data-gallery-images={JSON.stringify(
+              project.images.map((image) => ({
+                src: image.src.src,
+                alt: image.alt[lang],
+                caption: image.caption[lang],
+                width: image.src.width,
+                height: image.src.height,
+              })),
+            )}
+            aria-label={`${lang === 'en' ? 'Open images for' : 'Abrir imágenes de'} ${project.title[lang]}`}
+          >
+            <Image
+              src={project.images[0].src}
+              alt={project.images[0].alt[lang]}
+              widths={[320, 640, 960, project.images[0].src.width]}
+              sizes="(min-width: 48rem) 40rem, calc(100vw - 6rem)"
+              format="webp"
+              quality={85}
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="project-image-hint" aria-hidden="true">
+              ⤢
+            </span>
+            {project.images.length > 1 && (
+              <span class="project-image-count">
+                {project.images.length} {lang === 'en' ? 'images' : 'imágenes'}
+              </span>
+            )}
+          </a>
+          <figcaption>{project.images[0].caption[lang]}</figcaption>
+        </figure>
       ))}
-      <div class="project-tech">{project.technologies}</div>
+      <h3 id={`${project.id}-title`}>
+        <LocalizedText text={project.title} />
+      </h3>
+      <p class="project-meta">
+        {project.client} · {project.employer} ·{' '}
+        <LocalizedText text={project.period} />
+      </p>
+      <p class="project-description">
+        <LocalizedText text={project.description} />
+      </p>
+      <p class="project-tech">{project.technologies}</p>
+      <div class="project-links">
+        <a
+          class="project-site"
+          href={project.href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <LocalizedText text={{ en: 'Visit website', es: 'Visitar sitio' }} />
+          <span class="sr-only">
+            {' '}
+            — <LocalizedText text={project.title} />
+          </span>
+          <span aria-hidden="true"> ↗</span>
+        </a>
+      </div>
     </article>
   ))}
 </PortfolioSection>

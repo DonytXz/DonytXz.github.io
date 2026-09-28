@@ -4,10 +4,13 @@ import LocalizedText from './LocalizedText.astro';
 import PreferenceControls from './PreferenceControls.astro';
 import SocialLinks from './SocialLinks.astro';
 
-// Match the published sections in index.astro. Projects is temporarily disabled;
-// Skills and Education have been removed from the page.
+// Match the published sections in index.astro; Skills and Education stay hidden.
 const navigationSections = sections.filter(
-  ({ id }) => id === 'about' || id === 'experience' || id === 'contact',
+  ({ id }) =>
+    id === 'about' ||
+    id === 'experience' ||
+    id === 'projects' ||
+    id === 'contact',
 );
 ---
 

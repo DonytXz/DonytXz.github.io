@@ -90,6 +90,18 @@ button {
   font: inherit;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 .icon {
   width: 1.1rem;
   height: 1.1rem;
@@ -504,30 +516,124 @@ button {
   margin-top: 1.5rem;
 }
 
-/* Project titles remain real links to the authored destinations. */
+/* Local screenshots and bilingual copy share the existing reading column. */
 .project + .project {
-  margin-top: 1rem;
+  margin-top: 2rem;
+}
+
+.project-figure {
+  margin: 0 0 1.25rem;
+}
+
+.project-gallery-trigger {
+  position: relative;
+  display: block;
+  border-radius: 5px;
+  cursor: zoom-in;
+}
+
+.project-image-count,
+.project-image-hint {
+  position: absolute;
+  bottom: 0.75rem;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.75rem;
+}
+
+.project-image-count {
+  left: 0.75rem;
+}
+.project-image-hint {
+  right: 0.75rem;
+  font-size: 1rem;
+}
+
+.project-gallery {
+  width: min(92vw, 50rem);
+  max-height: 90vh;
+  max-height: 90dvh;
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  box-shadow: 0 24px 80px #0005;
+}
+
+.project-gallery::backdrop {
+  background: #0f172abf;
+}
+.project-gallery .dialog-header {
+  flex-wrap: nowrap;
+}
+.project-gallery .dialog-close-btn {
+  flex-shrink: 0;
+}
+.gallery-figure {
+  margin: 0;
+  padding: 1rem;
+}
+.gallery-stage {
+  display: grid;
+  place-items: center;
+}
+.gallery-stage img {
+  display: block;
+  width: 100%;
+  height: min(52vh, 30rem);
+  height: min(52dvh, 30rem);
+  object-fit: contain;
+}
+.gallery-figure figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+}
+.gallery-navigation:not([hidden]) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0 1rem 1rem;
+  font-size: 0.75rem;
+}
+.gallery-navigation button {
+  min-height: 2.75rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+html:has(#project-gallery[open]) {
+  overflow: hidden;
+}
+
+.project-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: top;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+}
+
+.project-figure figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
+  line-height: 1.6;
 }
 
 .project h3 {
-  margin-bottom: 0.75rem;
-}
-
-.project h3 a {
-  color: var(--color-text);
-  text-decoration-color: var(--color-border);
-}
-
-.project h3 a:hover,
-.project h3 a:focus-visible {
-  color: var(--color-link);
-  text-decoration-color: currentColor;
-}
-
-.project-tag {
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  font-weight: 400;
+  margin-bottom: 0.5rem;
 }
 
 .project p {
@@ -535,14 +641,30 @@ button {
   line-height: 1.8;
 }
 
-.project-tech {
-  margin-top: 1rem;
-  padding-top: 0.8rem;
-  border-top: 1px solid var(--color-border);
-  color: var(--color-link);
-  font-size: 0.72rem;
+.project .project-meta {
+  font-size: 0.75rem;
+  line-height: 1.7;
+}
+
+.project .project-tech {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  line-height: 1.8;
+}
+
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.25rem;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.project-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.75rem;
 }
 
 .project:focus-within {
@@ -922,7 +1044,8 @@ html:not([data-js]) #open-audit-btn {
   .skip-link,
   .site-nav,
   .experience-expand summary,
-  .audit-dialog[open] {
+  .audit-dialog[open],
+  .project-gallery[open] {
     display: none !important;
   }
 
@@ -952,6 +1075,23 @@ html:not([data-js]) #open-audit-btn {
   .project h3,
   .education-subheading {
     break-after: avoid;
+  }
+
+  .project {
+    break-inside: avoid;
+  }
+
+  .project-figure {
+    display: none !important;
+  }
+
+  .project-links a {
+    display: inline;
+    min-height: 0;
+  }
+
+  .project-links {
+    display: block;
   }
 
   .role-bullets li,

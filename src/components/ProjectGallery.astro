@@ -1,0 +1,41 @@
+---
+import LocalizedText from './LocalizedText.astro';
+---
+
+<dialog
+  id="project-gallery"
+  class="project-gallery"
+  aria-labelledby="gallery-title"
+>
+  <div class="dialog-header">
+    <h2 id="gallery-title"></h2>
+    <button type="button" class="dialog-close-btn" data-gallery-close autofocus>
+      <span aria-hidden="true">×</span>
+      <span class="sr-only">
+        <LocalizedText text={{ en: 'Close images', es: 'Cerrar imágenes' }} />
+      </span>
+    </button>
+  </div>
+  <figure class="gallery-figure">
+    <div class="gallery-stage">
+      <img id="gallery-image" alt="" decoding="async" />
+    </div>
+    <figcaption id="gallery-caption"></figcaption>
+  </figure>
+  <div class="gallery-navigation" hidden>
+    <button type="button" data-gallery-previous>
+      <span aria-hidden="true">←</span>
+      <LocalizedText text={{ en: 'Previous', es: 'Anterior' }} />
+    </button>
+    <p
+      id="gallery-position"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></p>
+    <button type="button" data-gallery-next>
+      <LocalizedText text={{ en: 'Next', es: 'Siguiente' }} />
+      <span aria-hidden="true">→</span>
+    </button>
+  </div>
+</dialog>

@@ -3,7 +3,7 @@
 ## Product contract
 
 - This is the faithful Astro migration of Donato Alvarez's existing bilingual CV-style portfolio.
-- The published sections are `about`, `experience`, and `contact`. Projects is temporarily commented out; Skills and Education were removed from the page and navigation at the user's request. Preserve the remaining CV facts, translations, links, and featured/expanded role grouping unless the user requests further content changes.
+- The published sections are `about`, `experience`, `projects`, and `contact`. Projects features Trámites Digitales Guadalajara, Espacios Escénicos Jalisco, and PBH Abogados with approved bilingual copy and contribution dates. Skills and Education were removed from the page and navigation at the user's request. Preserve the remaining CV facts, translations, links, and featured/expanded role grouping unless the user requests further content changes.
 - Content lives in `src/data/`; presentation lives in native `.astro` components. Prefer static HTML and small TypeScript modules for browser interactions.
 - Preserve accessible landmarks, keyboard behavior, native disclosures/dialogs, light/dark modes, EN/ES switching, blocked-storage handling, and print behavior.
 - Use the existing CSS custom properties in `src/styles/global.css` and the existing content model. Light is the default theme; an explicitly saved theme preference may override it.
