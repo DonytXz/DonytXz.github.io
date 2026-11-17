@@ -46,8 +46,10 @@ to the initial page.
   a pin; pinning a wrapper does not pin mutable references inside that wrapper.
 - Dependabot proposes weekly npm and GitHub Actions updates. Review and test them
   before merging. The lockfile and `npm ci` keep dependency installation repeatable.
-  CI also runs `npm audit --audit-level=high` across build and runtime dependencies.
-  Review advisories rather than applying unreviewed force-upgrades to clear a gate.
+  CI also runs `npm run audit:deps` (`npm audit --audit-level=high --json` via
+  `scripts/audit-deps.mjs`) across build and runtime dependencies. Review
+  advisories—and document any temporary accepted exceptions there—rather than
+  applying unreviewed force-upgrades to clear a gate.
 - CI and availability checks have read-only repository permissions. Only the
   deployment job receives Pages-write and OIDC permissions. Publishing requires
   `main` and the original repository, including manual dispatch.
