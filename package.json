@@ -28,7 +28,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
     "@modelcontextprotocol/sdk": "^1.32.2",
-    "@playwright/test": "^1.65.0",
+    "@playwright/test": "^1.65.1",
     "ajv": "^8.20.0",
     "astro-mcp": "0.4.2",
     "lighthouse": "^13.6.0",
